@@ -1,6 +1,7 @@
 import { supabase } from '@/lib/supabase';
 import { User, LoginCredentials, RegisterData, ResetPasswordData, ChangePasswordData } from '@/types/auth';
 import { Platform } from 'react-native';
+import { AchievementService } from './achievementService';
 
 // Default avatar URL for new users (Bolt Hackathon Badge style)
 const DEFAULT_AVATAR_URL = 'https://images.pexels.com/photos/1222271/pexels-photo-1222271.jpeg?auto=compress&cs=tinysrgb&w=200&h=200&dpr=2';
@@ -114,8 +115,18 @@ export class AuthService {
         profile = await this.getUserProfileWithRetry(data.user.id, 2);
       }
       
+      // Grant default achievements to new user
+      console.log('🏆 Granting default achievements to new user...');
+      try {
+        await AchievementService.grantDefaultAchievements(data.user.id);
+        console.log('✅ Default achievements granted successfully');
+      } catch (achievementError) {
+        console.error('⚠️ Failed to grant default achievements:', achievementError);
+        // Don't fail the signup process if achievements fail
+      }
+      
       const user = this.mapSupabaseUserToUser(data.user, profile);
-      console.log('✅ Registration complete with user profile');
+      console.log('✅ Registration complete with user profile and default achievements');
       return { user, needsVerification: false };
       
     } catch (profileError) {
@@ -126,6 +137,14 @@ export class AuthService {
       try {
         await this.createUserProfile(data.user.id, registerData);
         console.log('✅ Manual profile creation successful');
+        
+        // Grant default achievements
+        try {
+          await AchievementService.grantDefaultAchievements(data.user.id);
+          console.log('✅ Default achievements granted successfully');
+        } catch (achievementError) {
+          console.error('⚠️ Failed to grant default achievements:', achievementError);
+        }
         
         const profile = await this.getUserProfileWithRetry(data.user.id, 2);
         const user = this.mapSupabaseUserToUser(data.user, profile);

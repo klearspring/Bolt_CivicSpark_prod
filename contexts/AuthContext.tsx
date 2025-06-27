@@ -3,6 +3,7 @@ import { Platform } from 'react-native';
 import { User, AuthState, LoginCredentials, RegisterData, ResetPasswordData, ChangePasswordData, SocialLoginData } from '@/types/auth';
 import { AuthService } from '@/services/authService';
 import { SocialAuthService } from '@/services/socialAuth';
+import { AchievementService } from '@/services/achievementService';
 import { supabase } from '@/lib/supabase';
 
 interface AuthContextType extends AuthState {
@@ -167,11 +168,11 @@ const createDemoUser = (): User => ({
   },
   civicProfile: {
     joinDate: '2023-12-15',
-    totalPoints: 285,
-    completedMissions: 5,
-    joinedCircles: ['1', '3'],
-    achievements: ['1', '2', '3', '4'],
-    civicScore: 57,
+    totalPoints: 0,
+    completedMissions: 0,
+    joinedCircles: [],
+    achievements: ['welcome_to_civicspark'], // Demo user has welcome achievement
+    civicScore: 5,
   },
   verification: {
     emailVerified: true,

@@ -1,175 +1,156 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, SafeAreaView, Image } from 'react-native';
 import { Award, Target, Users, Calendar, MapPin, Mail, Phone, ChevronRight, Flame, TrendingUp, Star } from 'lucide-react-native';
 import { Colors } from '@/constants/Colors';
 import { useAuth } from '@/contexts/AuthContext';
-
-// Mock data for achievements
-const mockAchievements = [
-  {
-    id: '1',
-    title: 'Civic Starter',
-    description: 'Complete your first civic mission',
-    icon: '🎯',
-    rarity: 'common',
-    unlocked: true,
-    unlockedDate: '2024-01-15',
-    progress: { current: 1, total: 1 }
-  },
-  {
-    id: '2',
-    title: 'Community Connector',
-    description: 'Join 3 neighborhood circles',
-    icon: '🤝',
-    rarity: 'rare',
-    unlocked: true,
-    unlockedDate: '2024-01-20',
-    progress: { current: 3, total: 3 }
-  },
-  {
-    id: '3',
-    title: 'Meeting Regular',
-    description: 'Attend 5 city council meetings',
-    icon: '🏛️',
-    rarity: 'epic',
-    unlocked: true,
-    unlockedDate: '2024-01-25',
-    progress: { current: 5, total: 5 }
-  },
-  {
-    id: '4',
-    title: 'Neighborhood Ambassador',
-    description: 'Complete 10 civic missions',
-    icon: '🌟',
-    rarity: 'legendary',
-    unlocked: true,
-    unlockedDate: '2024-02-01',
-    progress: { current: 10, total: 10 }
-  },
-  {
-    id: '5',
-    title: 'Super Connector',
-    description: 'Join 10 neighborhood circles',
-    icon: '🔗',
-    rarity: 'epic',
-    unlocked: false,
-    progress: { current: 3, total: 10 }
-  },
-  {
-    id: '6',
-    title: 'Civic Legend',
-    description: 'Complete 50 civic missions',
-    icon: '👑',
-    rarity: 'legendary',
-    unlocked: false,
-    progress: { current: 5, total: 50 }
-  }
-];
-
-// Mock data for recent civic actions
-const mockCivicActions = [
-  {
-    id: '1',
-    title: 'Attended City Council Meeting',
-    date: '2024-01-15',
-    category: 'meeting',
-    points: 50,
-    verified: true
-  },
-  {
-    id: '2',
-    title: 'Volunteered at Community Garden',
-    date: '2024-01-12',
-    category: 'volunteer',
-    points: 75,
-    verified: true
-  },
-  {
-    id: '3',
-    title: 'Contacted Local Representative',
-    date: '2024-01-10',
-    category: 'advocacy',
-    points: 25,
-    verified: false
-  },
-  {
-    id: '4',
-    title: 'Organized Neighborhood Cleanup',
-    date: '2024-01-08',
-    category: 'mission',
-    points: 100,
-    verified: true
-  },
-  {
-    id: '5',
-    title: 'Attended School Board Meeting',
-    date: '2024-01-05',
-    category: 'meeting',
-    points: 40,
-    verified: true
-  }
-];
-
-// Mock data for communities
-const mockCommunities = [
-  {
-    id: '1',
-    name: 'Downtown Neighborhood',
-    type: 'neighborhood',
-    memberCount: 1247,
-    engagementLevel: 'high',
-    missionsCompleted: 5,
-    circlesJoined: 3,
-    isActive: true,
-    location: {
-      address: 'Downtown District',
-      radius: '0.5 miles'
-    },
-    joinedDate: '2023-12-15'
-  },
-  {
-    id: '2',
-    name: 'Lincoln Elementary School',
-    type: 'school',
-    memberCount: 89,
-    engagementLevel: 'medium',
-    missionsCompleted: 2,
-    circlesJoined: 1,
-    isActive: true,
-    location: {
-      address: 'Lincoln Elementary',
-      radius: 'School District'
-    },
-    joinedDate: '2024-01-10'
-  }
-];
-
-const rarityColors = {
-  common: Colors.textMuted,
-  rare: Colors.info,
-  epic: Colors.warning,
-  legendary: Colors.primary
-};
-
-const categoryIcons = {
-  meeting: '🏛️',
-  volunteer: '🤝',
-  advocacy: '📢',
-  mission: '🎯'
-};
-
-const engagementColors = {
-  low: Colors.textMuted,
-  medium: Colors.warning,
-  high: Colors.success
-};
+import { AchievementService } from '@/services/achievementService';
 
 export default function ProfileTab() {
   const { user, isDemoMode } = useAuth();
   const [activeTab, setActiveTab] = useState<'overview' | 'actions' | 'achievements'>('overview');
+  const [achievements, setAchievements] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  const unlockedAchievements = mockAchievements.filter(a => a.unlocked);
-  const lockedAchievements = mockAchievements.filter(a => !a.unlocked);
+  // Load user achievements
+  useEffect(() => {
+    const loadAchievements = async () => {
+      if (!user?.id) return;
+      
+      try {
+        setLoading(true);
+        const userAchievements = await AchievementService.getUserAchievementProgress(user.id);
+        setAchievements(userAchievements);
+      } catch (error) {
+        console.error('Error loading achievements:', error);
+        // Fallback to demo data if there's an error
+        setAchievements(getDemoAchievements());
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (isDemoMode) {
+      // Use demo data for demo mode
+      setAchievements(getDemoAchievements());
+      setLoading(false);
+    } else {
+      loadAchievements();
+    }
+  }, [user?.id, isDemoMode]);
+
+  // Demo achievements data (for demo mode)
+  const getDemoAchievements = () => [
+    {
+      id: 'welcome_to_civicspark',
+      title: 'Welcome to CivicSpark',
+      description: 'Welcome to the community! Your civic journey begins now.',
+      icon: '🎉',
+      rarity: 'common',
+      unlocked: true,
+      unlockedDate: '2024-01-15',
+      progress: { current: 1, total: 1 }
+    },
+    {
+      id: 'civic_starter',
+      title: 'Civic Starter',
+      description: 'Complete your first civic mission',
+      icon: '🎯',
+      rarity: 'common',
+      unlocked: false,
+      progress: { current: 0, total: 1 }
+    },
+    {
+      id: 'community_connector',
+      title: 'Community Connector',
+      description: 'Join your first neighborhood circle',
+      icon: '🤝',
+      rarity: 'common',
+      unlocked: false,
+      progress: { current: 0, total: 1 }
+    },
+    {
+      id: 'mission_veteran',
+      title: 'Mission Veteran',
+      description: 'Complete 5 civic missions',
+      icon: '🏆',
+      rarity: 'rare',
+      unlocked: false,
+      progress: { current: 0, total: 5 }
+    },
+    {
+      id: 'super_connector',
+      title: 'Super Connector',
+      description: 'Join 5 neighborhood circles',
+      icon: '🔗',
+      rarity: 'epic',
+      unlocked: false,
+      progress: { current: 0, total: 5 }
+    },
+    {
+      id: 'civic_legend',
+      title: 'Civic Legend',
+      description: 'Complete 25 civic missions',
+      icon: '👑',
+      rarity: 'legendary',
+      unlocked: false,
+      progress: { current: 0, total: 25 }
+    }
+  ];
+
+  // Mock data for recent civic actions
+  const mockCivicActions = [
+    {
+      id: '1',
+      title: 'Signed up for CivicSpark',
+      date: '2024-01-15',
+      category: 'signup',
+      points: 0,
+      verified: true
+    }
+  ];
+
+  // Mock data for communities
+  const mockCommunities = [
+    {
+      id: '1',
+      name: 'Downtown Neighborhood',
+      type: 'neighborhood',
+      memberCount: 1247,
+      engagementLevel: 'low',
+      missionsCompleted: 0,
+      circlesJoined: 0,
+      isActive: true,
+      location: {
+        address: 'Downtown District',
+        radius: '0.5 miles'
+      },
+      joinedDate: '2023-12-15'
+    }
+  ];
+
+  const rarityColors = {
+    common: Colors.textMuted,
+    rare: Colors.info,
+    epic: Colors.warning,
+    legendary: Colors.primary
+  };
+
+  const categoryIcons = {
+    meeting: '🏛️',
+    volunteer: '🤝',
+    advocacy: '📢',
+    mission: '🎯',
+    signup: '🎉'
+  };
+
+  const engagementColors = {
+    low: Colors.textMuted,
+    medium: Colors.warning,
+    high: Colors.success
+  };
+
+  const unlockedAchievements = achievements.filter(a => a.unlocked);
+  const lockedAchievements = achievements.filter(a => !a.unlocked);
 
   const renderTabContent = () => {
     switch (activeTab) {
@@ -184,18 +165,18 @@ export default function ProfileTab() {
                 </View>
                 <View style={styles.scoreInfo}>
                   <Text style={styles.scoreTitle}>Civic Score</Text>
-                  <Text style={styles.scoreValue}>{user?.civicProfile?.civicScore || 57}/100</Text>
+                  <Text style={styles.scoreValue}>{user?.civicProfile?.civicScore || 5}/100</Text>
                 </View>
                 <View style={styles.streakContainer}>
                   <Flame size={20} color={Colors.warning} />
-                  <Text style={styles.streakText}>7 day streak</Text>
+                  <Text style={styles.streakText}>1 day streak</Text>
                 </View>
               </View>
               <View style={styles.scoreProgress}>
-                <View style={[styles.progressBar, { width: `${user?.civicProfile?.civicScore || 57}%` }]} />
+                <View style={[styles.progressBar, { width: `${user?.civicProfile?.civicScore || 5}%` }]} />
               </View>
               <Text style={styles.scoreDescription}>
-                Keep engaging with your community to increase your civic score!
+                Complete missions and join circles to increase your civic score!
               </Text>
             </View>
 
@@ -203,7 +184,7 @@ export default function ProfileTab() {
             <View style={styles.statsGrid}>
               <View style={styles.statCard}>
                 <Target size={20} color={Colors.primary} />
-                <Text style={styles.statNumber}>{user?.civicProfile?.totalPoints || 285}</Text>
+                <Text style={styles.statNumber}>{user?.civicProfile?.totalPoints || 0}</Text>
                 <Text style={styles.statLabel}>Total Points</Text>
               </View>
               <View style={styles.statCard}>
@@ -213,7 +194,7 @@ export default function ProfileTab() {
               </View>
               <View style={styles.statCard}>
                 <Users size={20} color={Colors.info} />
-                <Text style={styles.statNumber}>{user?.civicProfile?.joinedCircles?.length || 3}</Text>
+                <Text style={styles.statNumber}>{user?.civicProfile?.joinedCircles?.length || 0}</Text>
                 <Text style={styles.statLabel}>Circles</Text>
               </View>
             </View>
@@ -226,19 +207,27 @@ export default function ProfileTab() {
                   <Text style={styles.seeAllText}>See All</Text>
                 </TouchableOpacity>
               </View>
-              <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.achievementsScroll}>
-                {unlockedAchievements.slice(0, 4).map((achievement) => (
-                  <View key={achievement.id} style={styles.achievementCard}>
-                    <Text style={styles.achievementIcon}>{achievement.icon}</Text>
-                    <Text style={styles.achievementTitle}>{achievement.title}</Text>
-                    <View style={[styles.rarityBadge, { backgroundColor: rarityColors[achievement.rarity] + '20' }]}>
-                      <Text style={[styles.rarityText, { color: rarityColors[achievement.rarity] }]}>
-                        {achievement.rarity}
-                      </Text>
+              {unlockedAchievements.length > 0 ? (
+                <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.achievementsScroll}>
+                  {unlockedAchievements.slice(0, 4).map((achievement) => (
+                    <View key={achievement.id} style={styles.achievementCard}>
+                      <Text style={styles.achievementIcon}>{achievement.icon}</Text>
+                      <Text style={styles.achievementTitle}>{achievement.title}</Text>
+                      <View style={[styles.rarityBadge, { backgroundColor: rarityColors[achievement.rarity] + '20' }]}>
+                        <Text style={[styles.rarityText, { color: rarityColors[achievement.rarity] }]}>
+                          {achievement.rarity}
+                        </Text>
+                      </View>
                     </View>
-                  </View>
-                ))}
-              </ScrollView>
+                  ))}
+                </ScrollView>
+              ) : (
+                <View style={styles.emptyState}>
+                  <Text style={styles.emptyStateText}>
+                    Complete your first mission or join a circle to unlock achievements!
+                  </Text>
+                </View>
+              )}
             </View>
 
             {/* Communities */}
@@ -281,12 +270,17 @@ export default function ProfileTab() {
                     <Text style={styles.actionDate}>{action.date}</Text>
                   </View>
                   <View style={styles.actionPoints}>
-                    <Text style={styles.pointsText}>+{action.points}</Text>
+                    {action.points > 0 && <Text style={styles.pointsText}>+{action.points}</Text>}
                     {action.verified && <Text style={styles.verifiedText}>✓</Text>}
                   </View>
                 </View>
               </View>
             ))}
+            <View style={styles.emptyState}>
+              <Text style={styles.emptyStateText}>
+                Start completing missions to see your civic actions here!
+              </Text>
+            </View>
           </View>
         );
 
@@ -295,53 +289,67 @@ export default function ProfileTab() {
           <View style={styles.tabContent}>
             {/* Unlocked Achievements */}
             <Text style={styles.sectionTitle}>Unlocked Achievements ({unlockedAchievements.length})</Text>
-            {unlockedAchievements.map((achievement) => (
-              <View key={achievement.id} style={styles.fullAchievementCard}>
-                <View style={styles.achievementHeader}>
-                  <Text style={styles.achievementIconLarge}>{achievement.icon}</Text>
-                  <View style={styles.achievementDetails}>
-                    <Text style={styles.achievementTitleLarge}>{achievement.title}</Text>
-                    <Text style={styles.achievementDescription}>{achievement.description}</Text>
-                    <Text style={styles.unlockedDate}>Unlocked on {achievement.unlockedDate}</Text>
-                  </View>
-                  <View style={[styles.rarityBadge, { backgroundColor: rarityColors[achievement.rarity] + '20' }]}>
-                    <Text style={[styles.rarityText, { color: rarityColors[achievement.rarity] }]}>
-                      {achievement.rarity}
-                    </Text>
+            {unlockedAchievements.length > 0 ? (
+              unlockedAchievements.map((achievement) => (
+                <View key={achievement.id} style={styles.fullAchievementCard}>
+                  <View style={styles.achievementHeader}>
+                    <Text style={styles.achievementIconLarge}>{achievement.icon}</Text>
+                    <View style={styles.achievementDetails}>
+                      <Text style={styles.achievementTitleLarge}>{achievement.title}</Text>
+                      <Text style={styles.achievementDescription}>{achievement.description}</Text>
+                      {achievement.unlockedDate && (
+                        <Text style={styles.unlockedDate}>Unlocked on {achievement.unlockedDate}</Text>
+                      )}
+                    </View>
+                    <View style={[styles.rarityBadge, { backgroundColor: rarityColors[achievement.rarity] + '20' }]}>
+                      <Text style={[styles.rarityText, { color: rarityColors[achievement.rarity] }]}>
+                        {achievement.rarity}
+                      </Text>
+                    </View>
                   </View>
                 </View>
+              ))
+            ) : (
+              <View style={styles.emptyState}>
+                <Text style={styles.emptyStateText}>
+                  Complete missions and join circles to unlock achievements!
+                </Text>
               </View>
-            ))}
+            )}
 
             {/* Locked Achievements */}
-            <Text style={styles.sectionTitle}>In Progress ({lockedAchievements.length})</Text>
-            {lockedAchievements.map((achievement) => (
-              <View key={achievement.id} style={[styles.fullAchievementCard, styles.lockedCard]}>
-                <View style={styles.achievementHeader}>
-                  <Text style={[styles.achievementIconLarge, styles.lockedIcon]}>🔒</Text>
-                  <View style={styles.achievementDetails}>
-                    <Text style={[styles.achievementTitleLarge, styles.lockedText]}>{achievement.title}</Text>
-                    <Text style={[styles.achievementDescription, styles.lockedText]}>{achievement.description}</Text>
-                    <View style={styles.progressContainer}>
-                      <Text style={styles.progressText}>
-                        {achievement.progress.current}/{achievement.progress.total}
-                      </Text>
-                      <View style={styles.progressBarContainer}>
-                        <View style={[
-                          styles.progressBarFill, 
-                          { width: `${(achievement.progress.current / achievement.progress.total) * 100}%` }
-                        ]} />
+            {lockedAchievements.length > 0 && (
+              <>
+                <Text style={styles.sectionTitle}>In Progress ({lockedAchievements.length})</Text>
+                {lockedAchievements.map((achievement) => (
+                  <View key={achievement.id} style={[styles.fullAchievementCard, styles.lockedCard]}>
+                    <View style={styles.achievementHeader}>
+                      <Text style={[styles.achievementIconLarge, styles.lockedIcon]}>🔒</Text>
+                      <View style={styles.achievementDetails}>
+                        <Text style={[styles.achievementTitleLarge, styles.lockedText]}>{achievement.title}</Text>
+                        <Text style={[styles.achievementDescription, styles.lockedText]}>{achievement.description}</Text>
+                        <View style={styles.progressContainer}>
+                          <Text style={styles.progressText}>
+                            {achievement.progress.current}/{achievement.progress.total}
+                          </Text>
+                          <View style={styles.progressBarContainer}>
+                            <View style={[
+                              styles.progressBarFill, 
+                              { width: `${(achievement.progress.current / achievement.progress.total) * 100}%` }
+                            ]} />
+                          </View>
+                        </View>
+                      </View>
+                      <View style={[styles.rarityBadge, { backgroundColor: Colors.textMuted + '20' }]}>
+                        <Text style={[styles.rarityText, { color: Colors.textMuted }]}>
+                          {achievement.rarity}
+                        </Text>
                       </View>
                     </View>
                   </View>
-                  <View style={[styles.rarityBadge, { backgroundColor: Colors.textMuted + '20' }]}>
-                    <Text style={[styles.rarityText, { color: Colors.textMuted }]}>
-                      {achievement.rarity}
-                    </Text>
-                  </View>
-                </View>
-              </View>
-            ))}
+                ))}
+              </>
+            )}
           </View>
         );
 
@@ -832,5 +840,21 @@ const styles = StyleSheet.create({
     height: '100%',
     backgroundColor: Colors.primary,
     borderRadius: 3,
+  },
+  emptyState: {
+    backgroundColor: Colors.backgroundCard,
+    borderRadius: 12,
+    padding: 20,
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: Colors.border,
+    borderStyle: 'dashed',
+  },
+  emptyStateText: {
+    fontSize: 14,
+    fontFamily: 'Inter-Regular',
+    color: Colors.textMuted,
+    textAlign: 'center',
+    lineHeight: 20,
   },
 });
