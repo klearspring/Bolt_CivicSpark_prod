@@ -134,14 +134,14 @@ class DemoStorage {
   }
 }
 
-// Demo user data with the local image file
+// Demo user data with actual Bolt Hackathon Badge as default avatar
 const createDemoUser = (): User => ({
   id: 'demo-user-id',
   email: 'demo@civicspark.com',
   firstName: 'Alex',
   lastName: 'Thompson',
   displayName: 'Alex Thompson',
-  avatar: require('@/assets/images/black_circle_360x360.png'), // Use local image file
+  avatar: '/assets/images/black_circle_360x360.png', // Actual Bolt Hackathon Badge from assets
   phoneNumber: '+1 (555) 123-4567',
   authProvider: 'email',
   location: {
@@ -272,7 +272,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       DemoStorage.setItem('civicspark_demo_mode', 'true');
       DemoStorage.setItem('civicspark_demo_user', JSON.stringify(demoUser));
       
-      console.log('✅ Demo mode activated (memory only) with local image file');
+      console.log('✅ Demo mode activated (memory only) with actual Bolt avatar');
       
       dispatch({ type: 'SET_DEMO_MODE', payload: true });
       dispatch({ type: 'SET_USER', payload: demoUser });
@@ -297,7 +297,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         demoUser.lastName = result.user.lastName;
         demoUser.displayName = `${result.user.firstName} ${result.user.lastName}`;
         demoUser.email = result.user.email;
-        demoUser.avatar = result.user.avatar || require('@/assets/images/black_circle_360x360.png'); // Local image fallback
+        demoUser.avatar = result.user.avatar || '/assets/images/black_circle_360x360.png'; // Fallback to actual Bolt avatar
         demoUser.authProvider = provider;
         
         DemoStorage.setItem('civicspark_demo_mode', 'true');

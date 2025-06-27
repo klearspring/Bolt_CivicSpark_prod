@@ -1,5 +1,6 @@
 import React from 'react';
-import { View, StyleSheet, TouchableOpacity, Linking, Platform, Image } from 'react-native';
+import { View, StyleSheet, TouchableOpacity, Linking, Platform } from 'react-native';
+import { Image } from 'react-native';
 
 interface BoltHackathonBadgeProps {
   width?: number;
@@ -8,8 +9,8 @@ interface BoltHackathonBadgeProps {
 }
 
 export default function BoltHackathonBadge({ 
-  width = 120, 
-  height = 120, 
+  width = 200, 
+  height = 60, 
   style 
 }: BoltHackathonBadgeProps) {
   
@@ -32,15 +33,24 @@ export default function BoltHackathonBadge({
     }
   };
 
+  // Calculate the size for the circular badge to maintain aspect ratio
+  const badgeSize = Math.min(width, height);
+
   return (
     <TouchableOpacity 
       style={[styles.container, style]} 
       onPress={handlePress}
       activeOpacity={0.8}
     >
-      <Image 
+      <Image
         source={require('@/assets/images/black_circle_360x360.png')}
-        style={[styles.badgeImage, { width, height }]}
+        style={[
+          styles.badgeImage,
+          {
+            width: badgeSize,
+            height: badgeSize,
+          }
+        ]}
         resizeMode="contain"
       />
     </TouchableOpacity>
@@ -53,13 +63,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   badgeImage: {
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 4,
-    },
-    shadowOpacity: 0.3,
-    shadowRadius: 8,
-    elevation: 8,
+    borderRadius: 999, // Make it perfectly circular
   },
 });
