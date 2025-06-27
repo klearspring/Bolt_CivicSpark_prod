@@ -43,7 +43,7 @@ export class AuthService {
       throw new Error('You are already signed in with this email. Please sign out first.');
     }
 
-    // For development, disable email confirmation to avoid redirect issues
+    // For development, disable email confirmation completely
     const signUpData = {
       email: registerData.email,
       password: registerData.password,
@@ -57,12 +57,12 @@ export class AuthService {
           location: registerData.location,
           subscribe_to_newsletter: registerData.subscribeToNewsletter,
         },
-        // Disable email confirmation for development
+        // Completely disable email confirmation for development
         emailRedirectTo: undefined,
       },
     };
     
-    console.log('📤 Sending to Supabase (email confirmation disabled for dev)');
+    console.log('📤 Sending to Supabase (email confirmation disabled for development)');
 
     const { data, error } = await supabase.auth.signUp(signUpData);
 
@@ -90,7 +90,7 @@ export class AuthService {
     console.log('✉️ Email confirmed:', data.user.email_confirmed_at);
     console.log('🔑 Session exists:', !!data.session);
 
-    // In development with email confirmation disabled, we should have a session immediately
+    // With email confirmation disabled, we should have a session immediately
     if (!data.session) {
       console.log('⚠️ No session returned - this might indicate an issue');
       return { needsVerification: true };
@@ -256,38 +256,16 @@ export class AuthService {
     return this.mapSupabaseUserToUser(user, data);
   }
 
-  // Verify email
+  // Verify email (disabled for development)
   static async verifyEmail(token: string): Promise<void> {
-    console.log('✉️ AuthService.verifyEmail - Verifying email with token');
-    
-    const { error } = await supabase.auth.verifyOtp({
-      token_hash: token,
-      type: 'email',
-    });
-
-    if (error) {
-      console.error('❌ Email verification error:', error);
-      throw new Error(error.message);
-    }
-    
-    console.log('✅ Email verification successful');
+    console.log('✉️ AuthService.verifyEmail - Email verification disabled for development');
+    throw new Error('Email verification is disabled for development. Users are automatically verified.');
   }
 
-  // Resend verification email
+  // Resend verification email (disabled for development)
   static async resendVerificationEmail(email: string): Promise<void> {
-    console.log('📧 AuthService.resendVerificationEmail - Resending for:', email);
-    
-    const { error } = await supabase.auth.resend({
-      type: 'signup',
-      email: email,
-    });
-
-    if (error) {
-      console.error('❌ Resend verification error:', error);
-      throw new Error(error.message);
-    }
-    
-    console.log('✅ Verification email resent');
+    console.log('📧 AuthService.resendVerificationEmail - Email verification disabled for development');
+    throw new Error('Email verification is disabled for development. Users are automatically verified.');
   }
 
   // Private helper methods
@@ -379,7 +357,7 @@ export class AuthService {
         civicScore: 0,
       },
       verification: {
-        emailVerified: false,
+        emailVerified: true, // Auto-verify for development
         phoneVerified: false,
         identityVerified: false,
       },
@@ -442,7 +420,7 @@ export class AuthService {
         civicScore: 0,
       },
       verification: profile?.verification || {
-        emailVerified: supabaseUser.email_confirmed_at ? true : false,
+        emailVerified: true, // Auto-verify for development
         phoneVerified: false,
         identityVerified: false,
       },
