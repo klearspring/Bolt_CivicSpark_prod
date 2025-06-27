@@ -4,7 +4,7 @@ import { Platform } from 'react-native';
 import { AchievementService } from './achievementService';
 
 // Default avatar URL for new users - Using the actual Bolt Hackathon Badge from assets
-const DEFAULT_AVATAR_URL = '/assets/images/black_circle_360x360.png';
+const DEFAULT_AVATAR_URL = require('@/assets/images/black_circle_360x360.png');
 
 export class AuthService {
   // Sign in with email and password
