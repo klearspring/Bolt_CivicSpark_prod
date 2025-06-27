@@ -131,7 +131,7 @@ export default function SignInScreen() {
 
           {/* Bolt Hackathon Badge */}
           <View style={styles.badgeContainer}>
-            <BoltHackathonBadge width={180} height={54} />
+            <BoltHackathonBadge width={120} height={120} />
           </View>
 
           {/* Demo Mode Exit Notice */}
