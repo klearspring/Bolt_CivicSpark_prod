@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, StyleSheet, TouchableOpacity, Linking, Platform } from 'react-native';
+import { View, StyleSheet, TouchableOpacity, Linking, Platform, Text } from 'react-native';
 
 interface BoltHackathonBadgeProps {
   width?: number;
@@ -8,8 +8,8 @@ interface BoltHackathonBadgeProps {
 }
 
 export default function BoltHackathonBadge({ 
-  width = 200, 
-  height = 60, 
+  width = 120, 
+  height = 120, 
   style 
 }: BoltHackathonBadgeProps) {
   
@@ -32,7 +32,7 @@ export default function BoltHackathonBadge({
     }
   };
 
-  // Calculate the size for the circular badge to maintain aspect ratio
+  // Calculate the size for the circular badge
   const badgeSize = Math.min(width, height);
 
   return (
@@ -46,13 +46,19 @@ export default function BoltHackathonBadge({
         {
           width: badgeSize,
           height: badgeSize,
+          borderRadius: badgeSize / 2,
         }
       ]}>
-        <View style={styles.boltIcon}>
-          <View style={styles.lightning}>
-            <View style={styles.lightningTop} />
-            <View style={styles.lightningBottom} />
-          </View>
+        {/* Circular text around the edge */}
+        <View style={styles.circularTextContainer}>
+          <Text style={[styles.circularText, { fontSize: badgeSize * 0.08 }]}>
+            POWERED BY BOLT.NEW MADE IN
+          </Text>
+        </View>
+        
+        {/* Central 'b' logo */}
+        <View style={styles.centralLogo}>
+          <Text style={[styles.logoText, { fontSize: badgeSize * 0.4 }]}>b</Text>
         </View>
       </View>
     </TouchableOpacity>
@@ -66,7 +72,6 @@ const styles = StyleSheet.create({
   },
   boltBadge: {
     backgroundColor: '#000000',
-    borderRadius: 999,
     alignItems: 'center',
     justifyContent: 'center',
     shadowColor: '#000',
@@ -77,40 +82,36 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.3,
     shadowRadius: 8,
     elevation: 8,
+    position: 'relative',
   },
-  boltIcon: {
+  circularTextContainer: {
+    position: 'absolute',
+    width: '100%',
+    height: '100%',
     alignItems: 'center',
     justifyContent: 'center',
   },
-  lightning: {
-    position: 'relative',
-    width: 24,
-    height: 32,
-  },
-  lightningTop: {
+  circularText: {
+    color: '#FFFFFF',
+    fontFamily: 'Inter-Bold',
+    fontWeight: '900',
+    letterSpacing: 2,
+    textAlign: 'center',
     position: 'absolute',
-    top: 0,
+    top: '15%',
     left: 0,
-    width: 0,
-    height: 0,
-    borderLeftWidth: 8,
-    borderRightWidth: 16,
-    borderBottomWidth: 18,
-    borderLeftColor: 'transparent',
-    borderRightColor: 'transparent',
-    borderBottomColor: '#A9F00F',
-  },
-  lightningBottom: {
-    position: 'absolute',
-    bottom: 0,
     right: 0,
-    width: 0,
-    height: 0,
-    borderLeftWidth: 16,
-    borderRightWidth: 8,
-    borderTopWidth: 18,
-    borderLeftColor: 'transparent',
-    borderRightColor: 'transparent',
-    borderTopColor: '#A9F00F',
+    transform: [{ rotate: '0deg' }],
+  },
+  centralLogo: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    zIndex: 1,
+  },
+  logoText: {
+    color: '#FFFFFF',
+    fontFamily: 'Inter-Bold',
+    fontWeight: '900',
+    textAlign: 'center',
   },
 });

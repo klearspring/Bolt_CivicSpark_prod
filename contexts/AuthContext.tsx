@@ -134,14 +134,14 @@ class DemoStorage {
   }
 }
 
-// Demo user data with external avatar URL
+// Demo user data with the specific external avatar URL
 const createDemoUser = (): User => ({
   id: 'demo-user-id',
   email: 'demo@civicspark.com',
   firstName: 'Alex',
   lastName: 'Thompson',
   displayName: 'Alex Thompson',
-  avatar: 'https://images.pexels.com/photos/771742/pexels-photo-771742.jpeg?auto=compress&cs=tinysrgb&w=400', // External avatar URL
+  avatar: 'https://images.pexels.com/photos/771742/pexels-photo-771742.jpeg?auto=compress&cs=tinysrgb&w=400', // Specific external avatar URL
   phoneNumber: '+1 (555) 123-4567',
   authProvider: 'email',
   location: {
@@ -272,7 +272,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       DemoStorage.setItem('civicspark_demo_mode', 'true');
       DemoStorage.setItem('civicspark_demo_user', JSON.stringify(demoUser));
       
-      console.log('✅ Demo mode activated (memory only) with external avatar');
+      console.log('✅ Demo mode activated (memory only) with specific external avatar');
       
       dispatch({ type: 'SET_DEMO_MODE', payload: true });
       dispatch({ type: 'SET_USER', payload: demoUser });
@@ -297,7 +297,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         demoUser.lastName = result.user.lastName;
         demoUser.displayName = `${result.user.firstName} ${result.user.lastName}`;
         demoUser.email = result.user.email;
-        demoUser.avatar = result.user.avatar || 'https://images.pexels.com/photos/771742/pexels-photo-771742.jpeg?auto=compress&cs=tinysrgb&w=400'; // External avatar fallback
+        demoUser.avatar = result.user.avatar || 'https://images.pexels.com/photos/771742/pexels-photo-771742.jpeg?auto=compress&cs=tinysrgb&w=400'; // Specific external avatar fallback
         demoUser.authProvider = provider;
         
         DemoStorage.setItem('civicspark_demo_mode', 'true');
