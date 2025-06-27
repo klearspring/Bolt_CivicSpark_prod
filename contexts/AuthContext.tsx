@@ -133,14 +133,14 @@ class DemoStorage {
   }
 }
 
-// Demo user data
+// Demo user data with Bolt Hackathon Badge as default avatar
 const createDemoUser = (): User => ({
   id: 'demo-user-id',
   email: 'demo@civicspark.com',
   firstName: 'Alex',
   lastName: 'Thompson',
   displayName: 'Alex Thompson',
-  avatar: 'https://images.pexels.com/photos/1222271/pexels-photo-1222271.jpeg?auto=compress&cs=tinysrgb&w=200&h=200&dpr=2',
+  avatar: 'https://raw.githubusercontent.com/kickiniteasy/bolt-hackathon-badge/main/bolt-badge.svg',
   phoneNumber: '+1 (555) 123-4567',
   authProvider: 'email',
   location: {
@@ -296,7 +296,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         demoUser.lastName = result.user.lastName;
         demoUser.displayName = `${result.user.firstName} ${result.user.lastName}`;
         demoUser.email = result.user.email;
-        demoUser.avatar = result.user.avatar;
+        demoUser.avatar = result.user.avatar || 'https://raw.githubusercontent.com/kickiniteasy/bolt-hackathon-badge/main/bolt-badge.svg';
         demoUser.authProvider = provider;
         
         DemoStorage.setItem('civicspark_demo_mode', 'true');

@@ -333,6 +333,7 @@ export class AuthService {
       first_name: registerData.firstName,
       last_name: registerData.lastName,
       display_name: `${registerData.firstName} ${registerData.lastName}`,
+      avatar_url: 'https://raw.githubusercontent.com/kickiniteasy/bolt-hackathon-badge/main/bolt-badge.svg', // Default to Bolt badge
       phone_number: registerData.phoneNumber,
       date_of_birth: registerData.dateOfBirth,
       location: registerData.location,
@@ -389,7 +390,7 @@ export class AuthService {
       firstName: profile?.first_name || 'User',
       lastName: profile?.last_name || 'Name',
       displayName: profile?.display_name || 'User Name',
-      avatar: profile?.avatar_url,
+      avatar: profile?.avatar_url || 'https://raw.githubusercontent.com/kickiniteasy/bolt-hackathon-badge/main/bolt-badge.svg', // Default to Bolt badge
       phoneNumber: profile?.phone_number,
       dateOfBirth: profile?.date_of_birth,
       authProvider: 'email',
