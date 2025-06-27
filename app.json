@@ -1,0 +1,50 @@
+{
+  "expo": {
+    "name": "CivicSpark - Neighborhood Engagement",
+    "slug": "civicspark-mobile",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/images/icon.png",
+    "scheme": "civicspark",
+    "userInterfaceStyle": "automatic",
+    "newArchEnabled": true,
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.civicspark.mobile"
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/images/icon.png",
+        "backgroundColor": "#2563EB"
+      },
+      "package": "com.civicspark.mobile"
+    },
+    "web": {
+      "bundler": "metro",
+      "output": "static",
+      "favicon": "./assets/images/favicon.png"
+    },
+    "plugins": [
+      "expo-router",
+      [
+        "expo-router",
+        {
+          "origin": "https://civicspark.app/"
+        }
+      ],
+      "expo-font",
+      "expo-web-browser",
+      "expo-dev-client",
+      "expo-secure-store"
+    ],
+    "experiments": {
+      "typedRoutes": true
+    },
+    "extra": {
+      "eas": {
+        "projectId": "your-project-id-here"
+      },
+      "googleClientId": "your-google-client-id.apps.googleusercontent.com"
+    }
+  }
+}
