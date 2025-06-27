@@ -3,8 +3,8 @@ import { User, LoginCredentials, RegisterData, ResetPasswordData, ChangePassword
 import { Platform } from 'react-native';
 import { AchievementService } from './achievementService';
 
-// Default avatar URL for new users - Using the correct build path for the Bolt Hackathon Badge
-const DEFAULT_AVATAR_URL = '/assets/assets/images/black_circle_360x360.2e535fcfb28934336ff6cb0a8a6fbaa9.png';
+// Default avatar URL for new users - Using a reliable external image
+const DEFAULT_AVATAR_URL = 'https://images.pexels.com/photos/771742/pexels-photo-771742.jpeg?auto=compress&cs=tinysrgb&w=400';
 
 export class AuthService {
   // Sign in with email and password
@@ -355,7 +355,7 @@ export class AuthService {
       first_name: registerData.firstName,
       last_name: registerData.lastName,
       display_name: `${registerData.firstName} ${registerData.lastName}`,
-      avatar_url: DEFAULT_AVATAR_URL, // Use correct build path for Bolt Hackathon Badge
+      avatar_url: DEFAULT_AVATAR_URL, // Use external image URL
       phone_number: registerData.phoneNumber,
       date_of_birth: registerData.dateOfBirth,
       location: registerData.location,
@@ -386,7 +386,7 @@ export class AuthService {
       },
     };
     
-    console.log('📤 Creating profile with correct Bolt avatar path:', DEFAULT_AVATAR_URL);
+    console.log('📤 Creating profile with external avatar URL:', DEFAULT_AVATAR_URL);
 
     const { error } = await supabase
       .from('user_profiles')
@@ -400,7 +400,7 @@ export class AuthService {
       throw new Error(`Profile creation failed: ${error.message}`);
     }
     
-    console.log('✅ Manual profile creation successful with correct Bolt avatar path');
+    console.log('✅ Manual profile creation successful with external avatar URL');
   }
 
   private static mapSupabaseUserToUser(supabaseUser: any, profile: any): User {
@@ -412,7 +412,7 @@ export class AuthService {
       firstName: profile?.first_name || 'User',
       lastName: profile?.last_name || 'Name',
       displayName: profile?.display_name || 'User Name',
-      avatar: profile?.avatar_url || DEFAULT_AVATAR_URL, // Ensure correct Bolt avatar fallback
+      avatar: profile?.avatar_url || DEFAULT_AVATAR_URL, // Ensure external avatar fallback
       phoneNumber: profile?.phone_number,
       dateOfBirth: profile?.date_of_birth,
       authProvider: 'email',
@@ -452,7 +452,7 @@ export class AuthService {
       lastLoginAt: supabaseUser.last_sign_in_at,
     };
     
-    console.log('✅ User mapping complete with correct Bolt avatar path');
+    console.log('✅ User mapping complete with external avatar URL');
     return mappedUser;
   }
 }
