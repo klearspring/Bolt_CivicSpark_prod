@@ -4,7 +4,7 @@ import { Platform } from 'react-native';
 import { AchievementService } from './achievementService';
 
 // Default avatar URL for new users - Using the specific image you want
-const DEFAULT_AVATAR_URL = 'https://images.pexels.com/photos/771742/pexels-photo-771742.jpeg?auto=compress&cs=tinysrgb&w=400';
+const DEFAULT_AVATAR_URL = require('@/assets/images/black_circle_360x360.png');
 
 export class AuthService {
   // Sign in with email and password
@@ -355,7 +355,7 @@ export class AuthService {
       first_name: registerData.firstName,
       last_name: registerData.lastName,
       display_name: `${registerData.firstName} ${registerData.lastName}`,
-      avatar_url: DEFAULT_AVATAR_URL, // Use the specific external image URL
+      avatar_url: DEFAULT_AVATAR_URL, // Use the local image file
       phone_number: registerData.phoneNumber,
       date_of_birth: registerData.dateOfBirth,
       location: registerData.location,
@@ -386,7 +386,7 @@ export class AuthService {
       },
     };
     
-    console.log('📤 Creating profile with specific external avatar URL:', DEFAULT_AVATAR_URL);
+    console.log('📤 Creating profile with local image file:', DEFAULT_AVATAR_URL);
 
     const { error } = await supabase
       .from('user_profiles')
@@ -400,7 +400,7 @@ export class AuthService {
       throw new Error(`Profile creation failed: ${error.message}`);
     }
     
-    console.log('✅ Manual profile creation successful with specific external avatar URL');
+    console.log('✅ Manual profile creation successful with local image file');
   }
 
   private static mapSupabaseUserToUser(supabaseUser: any, profile: any): User {
@@ -412,7 +412,7 @@ export class AuthService {
       firstName: profile?.first_name || 'User',
       lastName: profile?.last_name || 'Name',
       displayName: profile?.display_name || 'User Name',
-      avatar: profile?.avatar_url || DEFAULT_AVATAR_URL, // Ensure specific external avatar fallback
+      avatar: profile?.avatar_url || DEFAULT_AVATAR_URL, // Ensure local image fallback
       phoneNumber: profile?.phone_number,
       dateOfBirth: profile?.date_of_birth,
       authProvider: 'email',
@@ -452,7 +452,7 @@ export class AuthService {
       lastLoginAt: supabaseUser.last_sign_in_at,
     };
     
-    console.log('✅ User mapping complete with specific external avatar URL');
+    console.log('✅ User mapping complete with local image file');
     return mappedUser;
   }
 }

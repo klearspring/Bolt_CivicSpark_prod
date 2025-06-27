@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, StyleSheet, TouchableOpacity, Linking, Platform, Text } from 'react-native';
+import { View, StyleSheet, TouchableOpacity, Linking, Platform, Image } from 'react-native';
 
 interface BoltHackathonBadgeProps {
   width?: number;
@@ -32,35 +32,17 @@ export default function BoltHackathonBadge({
     }
   };
 
-  // Calculate the size for the circular badge
-  const badgeSize = Math.min(width, height);
-
   return (
     <TouchableOpacity 
       style={[styles.container, style]} 
       onPress={handlePress}
       activeOpacity={0.8}
     >
-      <View style={[
-        styles.boltBadge,
-        {
-          width: badgeSize,
-          height: badgeSize,
-          borderRadius: badgeSize / 2,
-        }
-      ]}>
-        {/* Circular text around the edge */}
-        <View style={styles.circularTextContainer}>
-          <Text style={[styles.circularText, { fontSize: badgeSize * 0.08 }]}>
-            POWERED BY BOLT.NEW MADE IN
-          </Text>
-        </View>
-        
-        {/* Central 'b' logo */}
-        <View style={styles.centralLogo}>
-          <Text style={[styles.logoText, { fontSize: badgeSize * 0.4 }]}>b</Text>
-        </View>
-      </View>
+      <Image 
+        source={require('@/assets/images/black_circle_360x360.png')}
+        style={[styles.badgeImage, { width, height }]}
+        resizeMode="contain"
+      />
     </TouchableOpacity>
   );
 }
@@ -70,10 +52,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  boltBadge: {
-    backgroundColor: '#000000',
-    alignItems: 'center',
-    justifyContent: 'center',
+  badgeImage: {
     shadowColor: '#000',
     shadowOffset: {
       width: 0,
@@ -82,36 +61,5 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.3,
     shadowRadius: 8,
     elevation: 8,
-    position: 'relative',
-  },
-  circularTextContainer: {
-    position: 'absolute',
-    width: '100%',
-    height: '100%',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  circularText: {
-    color: '#FFFFFF',
-    fontFamily: 'Inter-Bold',
-    fontWeight: '900',
-    letterSpacing: 2,
-    textAlign: 'center',
-    position: 'absolute',
-    top: '15%',
-    left: 0,
-    right: 0,
-    transform: [{ rotate: '0deg' }],
-  },
-  centralLogo: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    zIndex: 1,
-  },
-  logoText: {
-    color: '#FFFFFF',
-    fontFamily: 'Inter-Bold',
-    fontWeight: '900',
-    textAlign: 'center',
   },
 });

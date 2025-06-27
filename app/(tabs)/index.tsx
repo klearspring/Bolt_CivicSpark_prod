@@ -364,7 +364,7 @@ export default function ProfileTab() {
       <View style={styles.header}>
         <View style={styles.profileSection}>
           <Image 
-            source={{ uri: user?.avatar || 'https://images.pexels.com/photos/1222271/pexels-photo-1222271.jpeg?auto=compress&cs=tinysrgb&w=200&h=200&dpr=2' }} 
+            source={user?.avatar || require('@/assets/images/black_circle_360x360.png')} 
             style={styles.profileImage} 
           />
           <View style={styles.profileInfo}>
