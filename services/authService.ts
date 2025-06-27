@@ -2,6 +2,9 @@ import { supabase } from '@/lib/supabase';
 import { User, LoginCredentials, RegisterData, ResetPasswordData, ChangePasswordData } from '@/types/auth';
 import { Platform } from 'react-native';
 
+// Default avatar URL for new users (Bolt Hackathon Badge style)
+const DEFAULT_AVATAR_URL = 'https://images.pexels.com/photos/1222271/pexels-photo-1222271.jpeg?auto=compress&cs=tinysrgb&w=200&h=200&dpr=2';
+
 export class AuthService {
   // Sign in with email and password
   static async signIn(credentials: LoginCredentials): Promise<User> {
@@ -333,7 +336,7 @@ export class AuthService {
       first_name: registerData.firstName,
       last_name: registerData.lastName,
       display_name: `${registerData.firstName} ${registerData.lastName}`,
-      avatar_url: require('@/assets/images/black_circle_360x360.png'), // Default to Bolt badge
+      avatar_url: DEFAULT_AVATAR_URL, // Use default avatar URL
       phone_number: registerData.phoneNumber,
       date_of_birth: registerData.dateOfBirth,
       location: registerData.location,
@@ -390,7 +393,7 @@ export class AuthService {
       firstName: profile?.first_name || 'User',
       lastName: profile?.last_name || 'Name',
       displayName: profile?.display_name || 'User Name',
-      avatar: profile?.avatar_url || require('@/assets/images/black_circle_360x360.png'), // Default to Bolt badge
+      avatar: profile?.avatar_url || DEFAULT_AVATAR_URL, // Use default avatar URL
       phoneNumber: profile?.phone_number,
       dateOfBirth: profile?.date_of_birth,
       authProvider: 'email',
