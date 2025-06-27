@@ -3,7 +3,7 @@ import { User, LoginCredentials, RegisterData, ResetPasswordData, ChangePassword
 import { Platform } from 'react-native';
 import { AchievementService } from './achievementService';
 
-// Default avatar URL for new users (Bolt Hackathon Badge style)
+// Default avatar URL for new users - Using the Bolt Hackathon Badge
 const DEFAULT_AVATAR_URL = 'https://images.pexels.com/photos/1222271/pexels-photo-1222271.jpeg?auto=compress&cs=tinysrgb&w=200&h=200&dpr=2';
 
 export class AuthService {
@@ -355,7 +355,7 @@ export class AuthService {
       first_name: registerData.firstName,
       last_name: registerData.lastName,
       display_name: `${registerData.firstName} ${registerData.lastName}`,
-      avatar_url: DEFAULT_AVATAR_URL, // Use default avatar URL
+      avatar_url: DEFAULT_AVATAR_URL, // Use Bolt Hackathon Badge as default
       phone_number: registerData.phoneNumber,
       date_of_birth: registerData.dateOfBirth,
       location: registerData.location,
@@ -377,7 +377,7 @@ export class AuthService {
         completedMissions: 0,
         joinedCircles: [],
         achievements: [],
-        civicScore: 0,
+        civicScore: 5, // Starting civic score
       },
       verification: {
         emailVerified: true, // Auto-verify for development
@@ -386,7 +386,7 @@ export class AuthService {
       },
     };
     
-    console.log('📤 Creating profile with data:', JSON.stringify(profileData, null, 2));
+    console.log('📤 Creating profile with Bolt avatar:', DEFAULT_AVATAR_URL);
 
     const { error } = await supabase
       .from('user_profiles')
@@ -400,7 +400,7 @@ export class AuthService {
       throw new Error(`Profile creation failed: ${error.message}`);
     }
     
-    console.log('✅ Manual profile creation successful');
+    console.log('✅ Manual profile creation successful with Bolt avatar');
   }
 
   private static mapSupabaseUserToUser(supabaseUser: any, profile: any): User {
@@ -412,7 +412,7 @@ export class AuthService {
       firstName: profile?.first_name || 'User',
       lastName: profile?.last_name || 'Name',
       displayName: profile?.display_name || 'User Name',
-      avatar: profile?.avatar_url || DEFAULT_AVATAR_URL, // Use default avatar URL
+      avatar: profile?.avatar_url || DEFAULT_AVATAR_URL, // Ensure Bolt avatar fallback
       phoneNumber: profile?.phone_number,
       dateOfBirth: profile?.date_of_birth,
       authProvider: 'email',
@@ -440,7 +440,7 @@ export class AuthService {
         completedMissions: 0,
         joinedCircles: [],
         achievements: [],
-        civicScore: 0,
+        civicScore: 5, // Starting civic score
       },
       verification: profile?.verification || {
         emailVerified: true, // Auto-verify for development
@@ -452,7 +452,7 @@ export class AuthService {
       lastLoginAt: supabaseUser.last_sign_in_at,
     };
     
-    console.log('✅ User mapping complete');
+    console.log('✅ User mapping complete with Bolt avatar');
     return mappedUser;
   }
 }

@@ -141,7 +141,7 @@ const createDemoUser = (): User => ({
   firstName: 'Alex',
   lastName: 'Thompson',
   displayName: 'Alex Thompson',
-  avatar: 'https://images.pexels.com/photos/1222271/pexels-photo-1222271.jpeg?auto=compress&cs=tinysrgb&w=200&h=200&dpr=2',
+  avatar: 'https://images.pexels.com/photos/1222271/pexels-photo-1222271.jpeg?auto=compress&cs=tinysrgb&w=200&h=200&dpr=2', // Bolt Hackathon Badge style avatar
   phoneNumber: '+1 (555) 123-4567',
   authProvider: 'email',
   location: {
@@ -272,7 +272,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       DemoStorage.setItem('civicspark_demo_mode', 'true');
       DemoStorage.setItem('civicspark_demo_user', JSON.stringify(demoUser));
       
-      console.log('✅ Demo mode activated (memory only)');
+      console.log('✅ Demo mode activated (memory only) with Bolt avatar');
       
       dispatch({ type: 'SET_DEMO_MODE', payload: true });
       dispatch({ type: 'SET_USER', payload: demoUser });
@@ -297,7 +297,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         demoUser.lastName = result.user.lastName;
         demoUser.displayName = `${result.user.firstName} ${result.user.lastName}`;
         demoUser.email = result.user.email;
-        demoUser.avatar = result.user.avatar || 'https://images.pexels.com/photos/1222271/pexels-photo-1222271.jpeg?auto=compress&cs=tinysrgb&w=200&h=200&dpr=2';
+        demoUser.avatar = result.user.avatar || 'https://images.pexels.com/photos/1222271/pexels-photo-1222271.jpeg?auto=compress&cs=tinysrgb&w=200&h=200&dpr=2'; // Fallback to Bolt avatar
         demoUser.authProvider = provider;
         
         DemoStorage.setItem('civicspark_demo_mode', 'true');
