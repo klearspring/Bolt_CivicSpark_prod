@@ -43,7 +43,7 @@ export default function BoltHackathonBadge({
       activeOpacity={0.8}
     >
       <Image
-        source={require('@/assets/images/black_circle_360x360.png')}
+        source={require('../assets/images/black_circle_360x360.png')}
         style={[
           styles.badgeImage,
           {
