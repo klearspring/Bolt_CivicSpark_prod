@@ -43,7 +43,7 @@ export default function BoltHackathonBadge({
       activeOpacity={0.8}
     >
       <Image
-        source={require('@/assets/images/black_circle_360x360.png')}
+        source={{ uri: 'https://images.pexels.com/photos/1222271/pexels-photo-1222271.jpeg?auto=compress&cs=tinysrgb&w=200&h=200&dpr=2' }}
         style={[
           styles.badgeImage,
           {
@@ -51,7 +51,7 @@ export default function BoltHackathonBadge({
             height: badgeSize,
           }
         ]}
-        resizeMode="contain"
+        resizeMode="cover"
       />
     </TouchableOpacity>
   );
