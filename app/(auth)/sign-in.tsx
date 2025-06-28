@@ -18,6 +18,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { LoginCredentials } from '@/types/auth';
 import SocialLoginButtons from '@/components/SocialLoginButtons';
 import DebugPanel from '@/components/DebugPanel';
+import BoltHackathonBadge from '@/components/BoltHackathonBadge';
 
 export default function SignInScreen() {
   const { signIn, signInWithSocial, signInWithDemo, isLoading, error, clearError, isDemoMode, signOut } = useAuth();
@@ -132,6 +133,11 @@ export default function SignInScreen() {
             <Text style={styles.headerSubtitle}>
               Connect with neighbors and make a difference in your community
             </Text>
+          </View>
+
+          {/* Bolt Hackathon Badge */}
+          <View style={styles.badgeContainer}>
+            <BoltHackathonBadge width={120} height={120} />
           </View>
 
           {/* Demo Mode Exit Notice */}
@@ -366,6 +372,10 @@ const styles = StyleSheet.create({
     color: Colors.textBody,
     lineHeight: 24,
     textAlign: 'center',
+  },
+  badgeContainer: {
+    alignItems: 'center',
+    marginVertical: 20,
   },
   demoExitNotice: {
     backgroundColor: Colors.warning + '20',
