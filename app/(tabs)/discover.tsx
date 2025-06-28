@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, SafeAreaView, Image } from 'react-native';
-import { ChevronUp, ChevronDown, MapPin, Users, Award, Star, Heart, MessageCircle } from 'lucide-react-native';
+import { ChevronUp, ChevronDown, MapPin, Users, Award, Star, Heart, MessageCircle, Construction } from 'lucide-react-native';
+import { useAuth } from '@/contexts/AuthContext';
 
 interface Candidate {
   id: string;
@@ -16,7 +17,8 @@ interface Candidate {
   avatar: string;
 }
 
-const mockCandidates: Candidate[] = [
+// Demo candidates for demo mode only
+const demoCandidates: Candidate[] = [
   {
     id: '1',
     name: 'Maria Rodriguez',
@@ -86,8 +88,19 @@ const categoryLabels = {
 };
 
 export default function DiscoverTab() {
+  const { isDemoMode } = useAuth();
+  const [candidates, setCandidates] = useState<Candidate[]>([]);
   const [votedCandidates, setVotedCandidates] = useState<{[key: string]: 'up' | 'down'}>({});
   const [endorsedCandidates, setEndorsedCandidates] = useState<string[]>([]);
+
+  // Initialize candidates based on demo mode
+  useEffect(() => {
+    if (isDemoMode) {
+      setCandidates(demoCandidates);
+    } else {
+      setCandidates([]); // No candidates for real users yet
+    }
+  }, [isDemoMode]);
 
   const vote = (candidateId: string, voteType: 'up' | 'down') => {
     setVotedCandidates(prev => ({
@@ -104,115 +117,161 @@ export default function DiscoverTab() {
     );
   };
 
+  // Render under development notice for real users
+  const renderUnderDevelopment = () => (
+    <View style={styles.underDevelopmentContainer}>
+      <View style={styles.underDevelopmentIcon}>
+        <Construction size={64} color="#F59E0B" />
+      </View>
+      <Text style={styles.underDevelopmentTitle}>Leader Discovery Under Development</Text>
+      <Text style={styles.underDevelopmentDescription}>
+        We're building a system to help you discover and connect with emerging civic leaders in your community.
+      </Text>
+      <View style={styles.featuresList}>
+        <Text style={styles.featuresTitle}>Coming Soon:</Text>
+        <View style={styles.featureItem}>
+          <Text style={styles.featureBullet}>•</Text>
+          <Text style={styles.featureText}>Discover neighbors who are making a difference</Text>
+        </View>
+        <View style={styles.featureItem}>
+          <Text style={styles.featureBullet}>•</Text>
+          <Text style={styles.featureText}>View civic scores and community impact</Text>
+        </View>
+        <View style={styles.featureItem}>
+          <Text style={styles.featureBullet}>•</Text>
+          <Text style={styles.featureText}>Endorse and support local leaders</Text>
+        </View>
+        <View style={styles.featureItem}>
+          <Text style={styles.featureBullet}>•</Text>
+          <Text style={styles.featureText}>Connect with like-minded community members</Text>
+        </View>
+      </View>
+      <Text style={styles.encouragementText}>
+        Start completing missions and joining circles to build your own civic profile!
+      </Text>
+    </View>
+  );
+
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
         <Text style={styles.headerTitle}>Discover Leaders</Text>
-        <Text style={styles.headerSubtitle}>Find and support emerging civic leaders in your community</Text>
+        <Text style={styles.headerSubtitle}>
+          {isDemoMode 
+            ? 'Find and support emerging civic leaders in your community'
+            : 'Connect with civic leaders in your area'
+          }
+        </Text>
       </View>
 
       <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
-        <Text style={styles.sectionTitle}>Community Nominees</Text>
-        <Text style={styles.sectionSubtitle}>
-          These neighbors have been nominated by their communities for their civic engagement and leadership potential.
-        </Text>
-        
-        {mockCandidates.map((candidate) => {
-          const userVote = votedCandidates[candidate.id];
-          const isEndorsed = endorsedCandidates.includes(candidate.id);
-          
-          return (
-            <View key={candidate.id} style={styles.candidateCard}>
-              <View style={styles.candidateHeader}>
-                <Image source={{ uri: candidate.avatar }} style={styles.avatar} />
-                <View style={styles.candidateInfo}>
-                  <View style={styles.nameRow}>
-                    <Text style={styles.candidateName}>{candidate.name}</Text>
-                    <View style={[styles.categoryBadge, { backgroundColor: categoryColors[candidate.category] }]}>
-                      <Text style={styles.categoryText}>{categoryLabels[candidate.category]}</Text>
+        {!isDemoMode ? (
+          renderUnderDevelopment()
+        ) : (
+          <>
+            <Text style={styles.sectionTitle}>Community Nominees</Text>
+            <Text style={styles.sectionSubtitle}>
+              These neighbors have been nominated by their communities for their civic engagement and leadership potential.
+            </Text>
+            
+            {candidates.map((candidate) => {
+              const userVote = votedCandidates[candidate.id];
+              const isEndorsed = endorsedCandidates.includes(candidate.id);
+              
+              return (
+                <View key={candidate.id} style={styles.candidateCard}>
+                  <View style={styles.candidateHeader}>
+                    <Image source={{ uri: candidate.avatar }} style={styles.avatar} />
+                    <View style={styles.candidateInfo}>
+                      <View style={styles.nameRow}>
+                        <Text style={styles.candidateName}>{candidate.name}</Text>
+                        <View style={[styles.categoryBadge, { backgroundColor: categoryColors[candidate.category] }]}>
+                          <Text style={styles.categoryText}>{categoryLabels[candidate.category]}</Text>
+                        </View>
+                      </View>
+                      <View style={styles.locationRow}>
+                        <MapPin size={14} color="#6B7280" />
+                        <Text style={styles.locationText}>{candidate.location}</Text>
+                      </View>
                     </View>
                   </View>
-                  <View style={styles.locationRow}>
-                    <MapPin size={14} color="#6B7280" />
-                    <Text style={styles.locationText}>{candidate.location}</Text>
+                  
+                  <Text style={styles.candidateBio}>{candidate.bio}</Text>
+                  
+                  {/* Civic Score */}
+                  <View style={styles.scoreContainer}>
+                    <View style={styles.scoreItem}>
+                      <Award size={16} color="#2563EB" />
+                      <Text style={styles.scoreLabel}>Civic Score</Text>
+                      <Text style={styles.scoreValue}>{candidate.civicScore}/100</Text>
+                    </View>
+                    <View style={styles.scoreBar}>
+                      <View style={[styles.scoreProgress, { width: `${candidate.civicScore}%` }]} />
+                    </View>
+                  </View>
+                  
+                  {/* Experience */}
+                  <View style={styles.experienceContainer}>
+                    <Text style={styles.experienceTitle}>Experience</Text>
+                    {candidate.experience.map((exp, index) => (
+                      <View key={index} style={styles.experienceItem}>
+                        <View style={styles.experienceDot} />
+                        <Text style={styles.experienceText}>{exp}</Text>
+                      </View>
+                    ))}
+                  </View>
+                  
+                  {/* Recent Actions */}
+                  <View style={styles.actionsContainer}>
+                    <Text style={styles.actionsTitle}>Recent Civic Actions</Text>
+                    {candidate.recentActions.slice(0, 2).map((action, index) => (
+                      <Text key={index} style={styles.actionItem}>• {action}</Text>
+                    ))}
+                  </View>
+                  
+                  {/* Stats Row */}
+                  <View style={styles.statsRow}>
+                    <View style={styles.statItem}>
+                      <Users size={14} color="#6B7280" />
+                      <Text style={styles.statText}>{candidate.endorsements} endorsements</Text>
+                    </View>
+                    <View style={styles.statItem}>
+                      <Star size={14} color="#6B7280" />
+                      <Text style={styles.statText}>{candidate.votes} community votes</Text>
+                    </View>
+                  </View>
+                  
+                  {/* Action Buttons */}
+                  <View style={styles.actionButtonsContainer}>
+                    <TouchableOpacity
+                      style={[styles.voteButton, userVote === 'up' && styles.upvotedButton]}
+                      onPress={() => vote(candidate.id, 'up')}
+                    >
+                      <ChevronUp size={16} color={userVote === 'up' ? '#059669' : '#6B7280'} />
+                      <Text style={[styles.voteButtonText, userVote === 'up' && styles.upvotedText]}>
+                        Upvote
+                      </Text>
+                    </TouchableOpacity>
+                    
+                    <TouchableOpacity
+                      style={[styles.endorseButton, isEndorsed && styles.endorsedButton]}
+                      onPress={() => toggleEndorsement(candidate.id)}
+                    >
+                      <Heart size={16} color={isEndorsed ? '#DC2626' : '#FFFFFF'} fill={isEndorsed ? '#DC2626' : 'none'} />
+                      <Text style={[styles.endorseButtonText, isEndorsed && styles.endorsedText]}>
+                        {isEndorsed ? 'Endorsed' : 'Endorse'}
+                      </Text>
+                    </TouchableOpacity>
+                    
+                    <TouchableOpacity style={styles.messageButton}>
+                      <MessageCircle size={16} color="#2563EB" />
+                    </TouchableOpacity>
                   </View>
                 </View>
-              </View>
-              
-              <Text style={styles.candidateBio}>{candidate.bio}</Text>
-              
-              {/* Civic Score */}
-              <View style={styles.scoreContainer}>
-                <View style={styles.scoreItem}>
-                  <Award size={16} color="#2563EB" />
-                  <Text style={styles.scoreLabel}>Civic Score</Text>
-                  <Text style={styles.scoreValue}>{candidate.civicScore}/100</Text>
-                </View>
-                <View style={styles.scoreBar}>
-                  <View style={[styles.scoreProgress, { width: `${candidate.civicScore}%` }]} />
-                </View>
-              </View>
-              
-              {/* Experience */}
-              <View style={styles.experienceContainer}>
-                <Text style={styles.experienceTitle}>Experience</Text>
-                {candidate.experience.map((exp, index) => (
-                  <View key={index} style={styles.experienceItem}>
-                    <View style={styles.experienceDot} />
-                    <Text style={styles.experienceText}>{exp}</Text>
-                  </View>
-                ))}
-              </View>
-              
-              {/* Recent Actions */}
-              <View style={styles.actionsContainer}>
-                <Text style={styles.actionsTitle}>Recent Civic Actions</Text>
-                {candidate.recentActions.slice(0, 2).map((action, index) => (
-                  <Text key={index} style={styles.actionItem}>• {action}</Text>
-                ))}
-              </View>
-              
-              {/* Stats Row */}
-              <View style={styles.statsRow}>
-                <View style={styles.statItem}>
-                  <Users size={14} color="#6B7280" />
-                  <Text style={styles.statText}>{candidate.endorsements} endorsements</Text>
-                </View>
-                <View style={styles.statItem}>
-                  <Star size={14} color="#6B7280" />
-                  <Text style={styles.statText}>{candidate.votes} community votes</Text>
-                </View>
-              </View>
-              
-              {/* Action Buttons */}
-              <View style={styles.actionButtonsContainer}>
-                <TouchableOpacity
-                  style={[styles.voteButton, userVote === 'up' && styles.upvotedButton]}
-                  onPress={() => vote(candidate.id, 'up')}
-                >
-                  <ChevronUp size={16} color={userVote === 'up' ? '#059669' : '#6B7280'} />
-                  <Text style={[styles.voteButtonText, userVote === 'up' && styles.upvotedText]}>
-                    Upvote
-                  </Text>
-                </TouchableOpacity>
-                
-                <TouchableOpacity
-                  style={[styles.endorseButton, isEndorsed && styles.endorsedButton]}
-                  onPress={() => toggleEndorsement(candidate.id)}
-                >
-                  <Heart size={16} color={isEndorsed ? '#DC2626' : '#FFFFFF'} fill={isEndorsed ? '#DC2626' : 'none'} />
-                  <Text style={[styles.endorseButtonText, isEndorsed && styles.endorsedText]}>
-                    {isEndorsed ? 'Endorsed' : 'Endorse'}
-                  </Text>
-                </TouchableOpacity>
-                
-                <TouchableOpacity style={styles.messageButton}>
-                  <MessageCircle size={16} color="#2563EB" />
-                </TouchableOpacity>
-              </View>
-            </View>
-          );
-        })}
+              );
+            })}
+          </>
+        )}
       </ScrollView>
     </SafeAreaView>
   );
@@ -259,6 +318,77 @@ const styles = StyleSheet.create({
     lineHeight: 20,
     marginBottom: 20,
   },
+  // Under Development Styles
+  underDevelopmentContainer: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 60,
+    paddingHorizontal: 20,
+  },
+  underDevelopmentIcon: {
+    marginBottom: 24,
+  },
+  underDevelopmentTitle: {
+    fontSize: 24,
+    fontFamily: 'Inter-Bold',
+    color: '#111827',
+    marginBottom: 12,
+    textAlign: 'center',
+  },
+  underDevelopmentDescription: {
+    fontSize: 16,
+    fontFamily: 'Inter-Regular',
+    color: '#6B7280',
+    textAlign: 'center',
+    lineHeight: 24,
+    marginBottom: 32,
+  },
+  featuresList: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: 12,
+    padding: 20,
+    marginBottom: 24,
+    borderWidth: 1,
+    borderColor: '#E5E7EB',
+    width: '100%',
+  },
+  featuresTitle: {
+    fontSize: 18,
+    fontFamily: 'Inter-SemiBold',
+    color: '#111827',
+    marginBottom: 16,
+  },
+  featureItem: {
+    flexDirection: 'row',
+    marginBottom: 12,
+  },
+  featureBullet: {
+    fontSize: 16,
+    fontFamily: 'Inter-SemiBold',
+    color: '#F59E0B',
+    marginRight: 12,
+    width: 16,
+  },
+  featureText: {
+    fontSize: 14,
+    fontFamily: 'Inter-Regular',
+    color: '#374151',
+    lineHeight: 20,
+    flex: 1,
+  },
+  encouragementText: {
+    fontSize: 14,
+    fontFamily: 'Inter-Medium',
+    color: '#059669',
+    textAlign: 'center',
+    backgroundColor: '#F0FDF4',
+    padding: 16,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: '#BBF7D0',
+  },
+  // Existing candidate card styles
   candidateCard: {
     backgroundColor: '#FFFFFF',
     borderRadius: 16,
