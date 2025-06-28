@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, SafeAreaView, Image, Alert, Platform } from 'react-native';
 import { MapPin, Users, MessageCircle, Shield, Plus, Clock, MessageSquare, LogOut } from 'lucide-react-native';
 import CreatePostModal from '@/components/CreatePostModal';
 import CreateCircleModal from '@/components/CreateCircleModal';
 import RepliesModal from '@/components/RepliesModal';
+import { useAuth } from '@/contexts/AuthContext';
 
 interface Circle {
   id: string;
@@ -34,7 +35,8 @@ interface Person {
   avatar: string;
 }
 
-const initialCircles: Circle[] = [
+// Demo circles for demo mode
+const demoCircles: Circle[] = [
   {
     id: '1',
     name: 'Downtown Residents',
@@ -100,7 +102,8 @@ const mockPeople: Person[] = [
   }
 ];
 
-const initialDiscussions: Discussion[] = [
+// Demo discussions for demo mode
+const demoDiscussions: Discussion[] = [
   {
     id: '1',
     circleId: '1',
@@ -140,14 +143,27 @@ const recipientTypeColors = {
 };
 
 export default function CirclesTab() {
-  const [circles, setCircles] = useState<Circle[]>(initialCircles);
+  const { isDemoMode } = useAuth();
+  const [circles, setCircles] = useState<Circle[]>([]);
+  const [userCreatedCircles, setUserCreatedCircles] = useState<Circle[]>([]);
   const [joinedCircles, setJoinedCircles] = useState<string[]>(['1', '3']);
-  const [discussions, setDiscussions] = useState<Discussion[]>(initialDiscussions);
+  const [discussions, setDiscussions] = useState<Discussion[]>([]);
   const [activeTab, setActiveTab] = useState<'discover' | 'joined'>('joined');
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [showCreateCircleModal, setShowCreateCircleModal] = useState(false);
   const [showRepliesModal, setShowRepliesModal] = useState(false);
   const [selectedDiscussion, setSelectedDiscussion] = useState<Discussion | null>(null);
+
+  // Initialize circles and discussions based on whether we're in demo mode
+  useEffect(() => {
+    if (isDemoMode) {
+      setCircles(demoCircles);
+      setDiscussions(demoDiscussions);
+    } else {
+      setCircles(userCreatedCircles);
+      setDiscussions([]);
+    }
+  }, [isDemoMode, userCreatedCircles]);
 
   const joinCircle = (circleId: string) => {
     if (!joinedCircles.includes(circleId)) {
@@ -241,8 +257,20 @@ export default function CirclesTab() {
       isJoined: true, // Creator automatically joins
     };
 
-    setCircles([newCircle, ...circles]);
+    if (isDemoMode) {
+      // In demo mode, add to the circles state
+      setCircles([newCircle, ...circles]);
+    } else {
+      // In real user mode, add to userCreatedCircles
+      setUserCreatedCircles([newCircle, ...userCreatedCircles]);
+    }
+    
     setJoinedCircles([...joinedCircles, newCircle.id]);
+    
+    // Show success feedback
+    if (Platform.OS !== 'web') {
+      Alert.alert('Success', 'Circle created successfully! You are now the first member.');
+    }
   };
 
   const handleOpenReplies = (discussion: Discussion) => {

@@ -104,7 +104,7 @@ const demoMissions: Mission[] = [
   }
 ];
 
-// Missions for real users - just the "Join your first circle" mission
+// Missions for real users - focused on getting started with the platform
 const realUserMissions: Mission[] = [
   {
     id: '1',
@@ -114,6 +114,21 @@ const realUserMissions: Mission[] = [
     duration: '5 minutes',
     participants: 0,
     points: 25,
+    category: 'community',
+    difficulty: 'easy',
+    targetType: 'neighborhood',
+    targetName: 'Entire Neighborhood',
+    comments: 0,
+    status: 'available'
+  },
+  {
+    id: '2',
+    title: 'Create Your First Neighborhood Circle',
+    description: 'Start your own circle to bring together neighbors around a topic you care about. Be the first to spark community engagement in your area!',
+    location: 'Your neighborhood',
+    duration: '10 minutes',
+    participants: 0,
+    points: 50,
     category: 'community',
     difficulty: 'easy',
     targetType: 'neighborhood',
