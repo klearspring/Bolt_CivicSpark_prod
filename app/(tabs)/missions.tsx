@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, SafeAreaView, Alert, Platform } from 'react-native';
 import { MapPin, Clock, Users, Award, Flame, CircleCheck as CheckCircle, Calendar, Plus, MessageCircle, UserPlus, UserMinus, Play, SquareCheck as CheckSquare } from 'lucide-react-native';
 import CreateMissionModal from '@/components/CreateMissionModal';
 import MissionCommentsModal from '@/components/MissionCommentsModal';
 import { Colors } from '@/constants/Colors';
+import { useAuth } from '@/contexts/AuthContext';
 
 type MissionStatus = 'available' | 'joined' | 'active' | 'completed' | 'left';
 
@@ -33,7 +34,8 @@ interface Circle {
   memberCount: number;
 }
 
-const initialMissions: Mission[] = [
+// Missions for demo mode
+const demoMissions: Mission[] = [
   {
     id: '1',
     title: 'Attend City Council Meeting',
@@ -102,6 +104,25 @@ const initialMissions: Mission[] = [
   }
 ];
 
+// Missions for real users - just the "Join your first circle" mission
+const realUserMissions: Mission[] = [
+  {
+    id: '1',
+    title: 'Join Your First Neighborhood Circle',
+    description: 'Connect with your neighbors by joining a local circle. Circles are groups focused on specific community interests or geographic areas.',
+    location: 'Your neighborhood',
+    duration: '5 minutes',
+    participants: 0,
+    points: 25,
+    category: 'community',
+    difficulty: 'easy',
+    targetType: 'neighborhood',
+    targetName: 'Entire Neighborhood',
+    comments: 0,
+    status: 'available'
+  }
+];
+
 // Mock circles data for the modal
 const mockCircles: Circle[] = [
   { id: '1', name: 'Downtown Residents', memberCount: 124 },
@@ -161,13 +182,19 @@ const statusConfig = {
 };
 
 export default function MissionsTab() {
-  const [missions, setMissions] = useState<Mission[]>(initialMissions);
+  const { isDemoMode } = useAuth();
+  const [missions, setMissions] = useState<Mission[]>([]);
   const [currentStreak, setCurrentStreak] = useState(7);
   const [totalPoints, setTotalPoints] = useState(285);
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [showCommentsModal, setShowCommentsModal] = useState(false);
   const [selectedMission, setSelectedMission] = useState<Mission | null>(null);
   const [activeFilter, setActiveFilter] = useState<'all' | 'available' | 'joined' | 'active' | 'completed'>('all');
+
+  // Initialize missions based on whether we're in demo mode or not
+  useEffect(() => {
+    setMissions(isDemoMode ? demoMissions : realUserMissions);
+  }, [isDemoMode]);
 
   const updateMissionStatus = (missionId: string, newStatus: MissionStatus) => {
     setMissions(prevMissions => 
