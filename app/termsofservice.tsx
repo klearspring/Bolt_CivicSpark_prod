@@ -1,8 +1,8 @@
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, SafeAreaView, Platform } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, SafeAreaView, Platform, Linking } from 'react-native';
 import { WebView } from 'react-native-webview';
 import { router } from 'expo-router';
-import { ArrowLeft } from 'lucide-react-native';
+import { ArrowLeft, FileText, ExternalLink } from 'lucide-react-native';
 import { Colors } from '@/constants/Colors';
 
 export default function TermsOfServiceScreen() {
@@ -11,6 +11,15 @@ export default function TermsOfServiceScreen() {
   
   // Format the URL for embedding
   const embedUrl = pdfUrl.replace('/view?usp=drive_link', '/preview');
+
+  // Function to open the PDF in a new tab (web) or browser (mobile)
+  const openPdf = () => {
+    if (Platform.OS === 'web') {
+      window.open(pdfUrl, '_blank');
+    } else {
+      Linking.openURL(pdfUrl);
+    }
+  };
 
   return (
     <SafeAreaView style={styles.container}>
@@ -24,34 +33,55 @@ export default function TermsOfServiceScreen() {
         <Text style={styles.headerTitle}>Terms of Service</Text>
       </View>
 
-      <View style={styles.webViewContainer}>
-        <WebView
-          source={{ uri: embedUrl }}
-          style={styles.webView}
-          startInLoadingState={true}
-          renderLoading={() => (
-            <View style={styles.loadingContainer}>
-              <Text style={styles.loadingText}>Loading Terms of Service...</Text>
-            </View>
-          )}
-          onError={(syntheticEvent) => {
-            const { nativeEvent } = syntheticEvent;
-            console.error('WebView error: ', nativeEvent);
-          }}
-        />
-      </View>
-
-      {Platform.OS === 'web' && (
-        <View style={styles.footer}>
-          <Text style={styles.footerText}>
-            If you're having trouble viewing the document, you can 
-            <TouchableOpacity 
-              onPress={() => window.open(pdfUrl, '_blank')}
-            >
-              <Text style={styles.linkText}> open it directly </Text>
-            </TouchableOpacity>
-            in a new tab.
+      {Platform.OS === 'web' ? (
+        // Web-specific content
+        <View style={styles.webContent}>
+          <View style={styles.pdfIconContainer}>
+            <FileText size={64} color={Colors.primary} />
+          </View>
+          
+          <Text style={styles.webTitle}>CivicSpark Terms of Service</Text>
+          
+          <Text style={styles.webDescription}>
+            Our Terms of Service outline the rules, guidelines, and agreements that govern your use of CivicSpark's platform and services.
           </Text>
+          
+          <TouchableOpacity 
+            style={styles.openButton}
+            onPress={openPdf}
+          >
+            <ExternalLink size={20} color={Colors.secondaryDark} />
+            <Text style={styles.openButtonText}>Open Terms of Service</Text>
+          </TouchableOpacity>
+          
+          <Text style={styles.webNote}>
+            The document will open in a new browser tab where you can read, download, or print it.
+          </Text>
+        </View>
+      ) : (
+        // Native mobile content with WebView
+        <View style={styles.webViewContainer}>
+          <WebView
+            source={{ uri: embedUrl }}
+            style={styles.webView}
+            startInLoadingState={true}
+            renderLoading={() => (
+              <View style={styles.loadingContainer}>
+                <Text style={styles.loadingText}>Loading Terms of Service...</Text>
+              </View>
+            )}
+            onError={(syntheticEvent) => {
+              const { nativeEvent } = syntheticEvent;
+              console.error('WebView error: ', nativeEvent);
+            }}
+          />
+          
+          <TouchableOpacity 
+            style={styles.mobileOpenButton}
+            onPress={openPdf}
+          >
+            <Text style={styles.mobileOpenButtonText}>Open in Browser</Text>
+          </TouchableOpacity>
         </View>
       )}
     </SafeAreaView>
@@ -86,6 +116,7 @@ const styles = StyleSheet.create({
     fontFamily: 'Inter-SemiBold',
     color: Colors.textHeading,
   },
+  // WebView styles for mobile
   webViewContainer: {
     flex: 1,
     overflow: 'hidden',
@@ -112,21 +143,81 @@ const styles = StyleSheet.create({
     fontFamily: 'Inter-Regular',
     color: Colors.textBody,
   },
-  footer: {
-    padding: 16,
-    backgroundColor: Colors.backgroundCard,
-    borderTopWidth: 1,
-    borderTopColor: Colors.border,
+  mobileOpenButton: {
+    padding: 12,
+    backgroundColor: Colors.primary,
+    borderRadius: 8,
+    margin: 16,
+    alignItems: 'center',
   },
-  footerText: {
+  mobileOpenButtonText: {
     fontSize: 14,
+    fontFamily: 'Inter-SemiBold',
+    color: Colors.secondaryDark,
+  },
+  // Web-specific styles
+  webContent: {
+    flex: 1,
+    padding: 24,
+    alignItems: 'center',
+    justifyContent: 'center',
+    maxWidth: 600,
+    alignSelf: 'center',
+    width: '100%',
+  },
+  pdfIconContainer: {
+    width: 120,
+    height: 120,
+    borderRadius: 60,
+    backgroundColor: Colors.primary + '20',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 24,
+  },
+  webTitle: {
+    fontSize: 28,
+    fontFamily: 'Inter-Bold',
+    color: Colors.textHeading,
+    marginBottom: 16,
+    textAlign: 'center',
+  },
+  webDescription: {
+    fontSize: 16,
     fontFamily: 'Inter-Regular',
     color: Colors.textBody,
     textAlign: 'center',
+    marginBottom: 32,
+    lineHeight: 24,
   },
-  linkText: {
-    color: Colors.primary,
+  openButton: {
+    flexDirection: 'row',
+    backgroundColor: Colors.primary,
+    paddingVertical: 16,
+    paddingHorizontal: 24,
+    borderRadius: 12,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 24,
+    shadowColor: Colors.black,
+    shadowOffset: {
+      width: 0,
+      height: 4,
+    },
+    shadowOpacity: 0.2,
+    shadowRadius: 8,
+    elevation: 4,
+  },
+  openButtonText: {
+    fontSize: 16,
     fontFamily: 'Inter-SemiBold',
-    textDecorationLine: 'underline',
+    color: Colors.secondaryDark,
+    marginLeft: 8,
+  },
+  webNote: {
+    fontSize: 14,
+    fontFamily: 'Inter-Regular',
+    color: Colors.textMuted,
+    textAlign: 'center',
+    maxWidth: 400,
   },
 });
