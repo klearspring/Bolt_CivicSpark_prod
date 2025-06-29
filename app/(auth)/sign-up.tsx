@@ -461,7 +461,9 @@ export default function SignUpScreen() {
             {formData.agreeToPrivacy && <Text style={styles.checkmark}>✓</Text>}
           </View>
           <Text style={styles.checkboxText}>
-            I agree to the <Text style={styles.linkText}>Privacy Policy</Text> *
+            I agree to the <Link href="/privacypolicy" asChild>
+              <Text style={styles.linkText}>Privacy Policy</Text>
+            </Link> *
           </Text>
         </TouchableOpacity>
         {errors.agreeToPrivacy && <Text style={styles.errorText}>{errors.agreeToPrivacy}</Text>}
