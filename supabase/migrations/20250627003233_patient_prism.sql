@@ -23,8 +23,8 @@ DROP FUNCTION IF EXISTS public.handle_new_user();
 
 -- Create the trigger function with proper permissions
 CREATE OR REPLACE FUNCTION public.handle_new_user()
-RETURNS trigger 
-LANGUAGE plpgsql 
+RETURNS trigger
+LANGUAGE plpgsql
 SECURITY DEFINER
 SET search_path = public, auth
 AS $$
@@ -39,28 +39,28 @@ DECLARE
   subscribe_to_newsletter_opted_in boolean;
 BEGIN
   -- Extract data with proper null handling
-  user_first_name := COALESCE(NEW.raw_user_meta_data->>'first_name', 'User');
+ user_first_name := COALESCE(NEW.raw_user_meta_data->>'first_name', 'User');
   user_last_name := COALESCE(NEW.raw_user_meta_data->>'last_name', 'Name');
   user_display_name := COALESCE(
-    NEW.raw_user_meta_data->>'display_name', 
+    NEW.raw_user_meta_data->>'display_name',
     user_first_name || ' ' || user_last_name
   );
   user_phone := NEW.raw_user_meta_data->>'phone_number';
-  
+
   -- Handle date conversion safely
   BEGIN
-    user_dob := CASE 
-      WHEN NEW.raw_user_meta_data->>'date_of_birth' IS NOT NULL 
-      THEN (NEW.raw_user_meta_data->>'date_of_birth')::date 
-      ELSE NULL 
+    user_dob := CASE
+      WHEN NEW.raw_user_meta_data->>'date_of_birth' IS NOT NULL
+      THEN (NEW.raw_user_meta_data->>'date_of_birth')::date
+      ELSE NULL
     END;
   EXCEPTION WHEN OTHERS THEN
     user_dob := NULL;
   END;
   
   -- Handle location JSON
-  user_location := CASE 
-    WHEN NEW.raw_user_meta_data->'location' IS NOT NULL 
+  user_location := CASE
+    WHEN NEW.raw_user_meta_data->'location' IS NOT NULL
     THEN NEW.raw_user_meta_data->'location'
     ELSE '{
       "address": "",
@@ -71,13 +71,14 @@ BEGIN
     }'::jsonb
   END;
 
--- Extract subscribe_to_newsletter and convert to boolean
-  subscribe_to_newsletter_opted_in := (NEW.raw_user_meta_data->>'subscribe_to_newsletter')::boolean;
+-- Extract subscribe_to_newsletter and convert to boolean more robustly
+  -- It will be TRUE only if the key exists and its value is the string 'true' (case-insensitive)
+  subscribe_to_newsletter_opted_in := (NEW.raw_user_meta_data->>'subscribe_to_newsletter' IS NOT NULL AND LOWER(NEW.raw_user_meta_data->>'subscribe_to_newsletter') = 'true');
 
 -- Construct preferences JSON, overriding email notification based on subscribe_to_newsletter
   user_preferences := jsonb_build_object(
     'notifications', jsonb_build_object(
-      'email', COALESCE(subscribe_to_newsletter_opted_in, true), -- Default to true if not specified
+      'email', subscribe_to_newsletter_opted_in, -- Use the directly derived boolean
       'push', true,
       'sms', false
     ),
@@ -88,7 +89,7 @@ BEGIN
     )
   );
 
-  -- Insert the user profile
+ -- Insert the user profile
   INSERT INTO public.user_profiles (
     id,
     first_name,
@@ -131,7 +132,7 @@ EXCEPTION
   WHEN OTHERS THEN
     -- Log the error for debugging
     RAISE LOG 'Error in handle_new_user for user %: % %', NEW.id, SQLSTATE, SQLERRM;
-    
+
     -- Try to insert a minimal profile to prevent auth failure
     BEGIN
       INSERT INTO public.user_profiles (id, first_name, last_name, display_name)
@@ -141,7 +142,7 @@ EXCEPTION
       -- If even minimal insert fails, log it but don't fail the auth
       RAISE LOG 'Failed to create minimal profile for user %: % %', NEW.id, SQLSTATE, SQLERRM;
     END;
-    
+
     RETURN NEW;
 END;
 $$;
