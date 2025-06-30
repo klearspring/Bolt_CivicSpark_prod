@@ -244,11 +244,25 @@ The debug panel is a powerful troubleshooting tool for developers that provides 
 
 ## 🚀 Deployment
 
-### Web Deployment
+### Continuous Deployment with Netlify
+
+This project is configured for automatic deployment to Netlify:
+
+1. **Push to GitHub**: Every push to `main` triggers a new deployment
+2. **Automatic Build**: Uses `npm run build:web` command
+3. **Environment Variables**: Configure in Netlify dashboard
+4. **Custom Domain**: Ready for `civicspark.app` or your domain
+
+See `DEPLOYMENT_GUIDE.md` for detailed setup instructions.
+
+### Manual Deployment
+
 ```bash
+# Build for web
 npm run build:web
+
+# Deploy the 'dist' folder to any static hosting service
 ```
-Deploy the `dist` folder to any static hosting service.
 
 ### Mobile Deployment
 ```bash
