@@ -134,6 +134,107 @@ A mobile-first web application that empowers neighbors to connect, collaborate, 
 - **CivicDataService**: Manages civic actions, achievements, and communities
 - **SocialAuthService**: Handles social login (Google, Apple)
 
+### Debug Panel
+
+The debug panel is a powerful troubleshooting tool for developers that provides real-time testing of database connections, authentication, and core functionality.
+
+#### Enabling the Debug Panel
+
+1. **Set Environment Variable**
+   ```bash
+   # In your .env file
+   EXPO_PUBLIC_SHOW_DEBUG_PANEL=true
+   ```
+
+2. **Restart Development Server**
+   ```bash
+   npm run dev
+   ```
+
+#### Accessing the Debug Panel
+
+1. Navigate to the sign-in screen (`/(auth)/sign-in`)
+2. Look for the "🔧 Show Debug Panel" button
+3. Tap to expand the debug interface
+
+#### Debug Panel Features
+
+**Connection Testing**
+- Test Supabase database connection
+- Verify authentication system
+- Check table existence and structure
+- Test Row Level Security (RLS) policies
+
+**Trigger Function Testing**
+- Verify database trigger functions
+- Test user profile creation triggers
+- Check trigger attachment and execution
+
+**Sign-up Flow Testing**
+- Test complete user registration process
+- Verify profile creation
+- Check achievement system integration
+- Test with temporary test users (auto-cleanup)
+
+**Diagnostic Tools**
+- Full system diagnostic (runs all tests)
+- Individual component testing
+- Real-time error reporting
+- Environment variable verification
+
+#### Using the Debug Panel
+
+**Quick Diagnostics**
+```
+1. Click "🚀 Run Full Diagnostic"
+2. Review test results in real-time
+3. Look for ❌ errors or ⚠️ warnings
+4. Use individual tests to isolate issues
+```
+
+**Common Debugging Scenarios**
+
+*Database Connection Issues*
+1. Run "Test Connection"
+2. Check environment variables display
+3. Verify Supabase URL and API key
+
+*Sign-up Problems*
+1. Run "🧪 Test Sign-Up" (creates temporary user)
+2. Check if profile creation works
+3. Verify trigger function execution
+4. Test user automatically cleaned up
+
+*Missing Tables*
+1. Run "Test Tables"
+2. Check which tables exist
+3. Run missing migrations if needed
+
+#### Debug Panel Security
+
+- **Development Only**: Only appears when `EXPO_PUBLIC_SHOW_DEBUG_PANEL=true`
+- **No Production Impact**: Automatically hidden in production builds
+- **Safe Testing**: Test users are automatically cleaned up
+- **No Real Data**: Uses temporary test data only
+
+#### Troubleshooting the Debug Panel
+
+**Panel Not Showing**
+- Verify `EXPO_PUBLIC_SHOW_DEBUG_PANEL=true` in `.env`
+- Restart development server
+- Check you're on the sign-in screen
+
+**Tests Failing**
+- Check Supabase project is active
+- Verify environment variables are correct
+- Ensure database migrations have been run
+- Check browser console for additional errors
+
+**Performance Impact**
+- Debug panel only loads when enabled
+- Tests run on-demand, not automatically
+- No impact on app performance when disabled
+
 ### Adding New Features
 1. **Database Changes**: Add migrations to `supabase/migrations/`
 2. **API Layer**: Update services in `services/`
