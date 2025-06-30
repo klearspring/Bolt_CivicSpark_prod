@@ -13,8 +13,7 @@ import {
   KeyboardAvoidingView,
 } from 'react-native';
 import { router } from 'expo-router';
-import { ArrowLeft, Camera, User, Mail, Phone, MapPin, Save, Loader } from 'lucide-react-native';
-import * as ImagePicker from 'expo-image-picker';
+import { ArrowLeft, User, Mail, Phone, MapPin, Save, Loader } from 'lucide-react-native';
 import { Colors } from '@/constants/Colors';
 import { useAuth } from '@/contexts/AuthContext';
 
@@ -72,7 +71,6 @@ export default function EditProfileScreen() {
         formData.location.city !== (user.location?.city || '') ||
         formData.location.state !== (user.location?.state || '') ||
         formData.location.zipCode !== (user.location?.zipCode || '') ||
-        formData.avatar !== (user.avatar || '') ||
         formData.emailNotifications !== (user.preferences?.notifications?.email || false);
       
       setHasChanges(hasFormChanges);
@@ -104,81 +102,6 @@ export default function EditProfileScreen() {
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
-  };
-
-  const handleImagePicker = async () => {
-    try {
-      // Request permission
-      const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
-      
-      if (permissionResult.granted === false) {
-        Alert.alert('Permission Required', 'Permission to access camera roll is required!');
-        return;
-      }
-
-      // Launch image picker
-      const result = await ImagePicker.launchImageLibraryAsync({
-        mediaTypes: ImagePicker.MediaTypeOptions.Images,
-        allowsEditing: true,
-        aspect: [1, 1],
-        quality: 0.8,
-        base64: false,
-      });
-
-      if (!result.canceled && result.assets[0]) {
-        const imageUri = result.assets[0].uri;
-        setFormData(prev => ({ ...prev, avatar: imageUri }));
-      }
-    } catch (error) {
-      console.error('Error picking image:', error);
-      Alert.alert('Error', 'Failed to pick image. Please try again.');
-    }
-  };
-
-  const handleCameraCapture = async () => {
-    try {
-      // Request permission
-      const permissionResult = await ImagePicker.requestCameraPermissionsAsync();
-      
-      if (permissionResult.granted === false) {
-        Alert.alert('Permission Required', 'Permission to access camera is required!');
-        return;
-      }
-
-      // Launch camera
-      const result = await ImagePicker.launchCameraAsync({
-        allowsEditing: true,
-        aspect: [1, 1],
-        quality: 0.8,
-        base64: false,
-      });
-
-      if (!result.canceled && result.assets[0]) {
-        const imageUri = result.assets[0].uri;
-        setFormData(prev => ({ ...prev, avatar: imageUri }));
-      }
-    } catch (error) {
-      console.error('Error taking photo:', error);
-      Alert.alert('Error', 'Failed to take photo. Please try again.');
-    }
-  };
-
-  const showImageOptions = () => {
-    if (Platform.OS === 'web') {
-      // On web, only show gallery option
-      handleImagePicker();
-    } else {
-      // On mobile, show both options
-      Alert.alert(
-        'Update Profile Photo',
-        'Choose how you\'d like to update your profile photo',
-        [
-          { text: 'Camera', onPress: handleCameraCapture },
-          { text: 'Photo Library', onPress: handleImagePicker },
-          { text: 'Cancel', style: 'cancel' },
-        ]
-      );
-    }
   };
 
   const handleSave = async () => {
@@ -289,21 +212,10 @@ export default function EditProfileScreen() {
                     <User size={40} color={Colors.textMuted} />
                   </View>
                 )}
-                <TouchableOpacity 
-                  style={styles.cameraButton}
-                  onPress={showImageOptions}
-                >
-                  <Camera size={16} color={Colors.secondaryDark} />
-                </TouchableOpacity>
               </View>
-              <TouchableOpacity 
-                style={styles.changePhotoButton}
-                onPress={showImageOptions}
-              >
-                <Text style={styles.changePhotoText}>
-                  {Platform.OS === 'web' ? 'Choose Photo' : 'Change Photo'}
-                </Text>
-              </TouchableOpacity>
+              <Text style={styles.avatarNote}>
+                Profile photo editing is temporarily disabled
+              </Text>
             </View>
           </View>
 
@@ -646,31 +558,12 @@ const styles = StyleSheet.create({
     borderColor: Colors.border,
     borderStyle: 'dashed',
   },
-  cameraButton: {
-    position: 'absolute',
-    bottom: 0,
-    right: 0,
-    width: 36,
-    height: 36,
-    borderRadius: 18,
-    backgroundColor: Colors.primary,
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderWidth: 3,
-    borderColor: Colors.backgroundCard,
-  },
-  changePhotoButton: {
-    paddingHorizontal: 20,
-    paddingVertical: 8,
-    borderRadius: 20,
-    backgroundColor: Colors.backgroundLight,
-    borderWidth: 1,
-    borderColor: Colors.border,
-  },
-  changePhotoText: {
+  avatarNote: {
     fontSize: 14,
-    fontFamily: 'Inter-SemiBold',
-    color: Colors.primary,
+    fontFamily: 'Inter-Regular',
+    color: Colors.textMuted,
+    textAlign: 'center',
+    fontStyle: 'italic',
   },
   inputRow: {
     flexDirection: 'row',
