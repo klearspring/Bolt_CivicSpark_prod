@@ -4,7 +4,7 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "dev": "EXPO_NO_TELEMETRY=1 expo start --port 19006",
+    "dev": "EXPO_NO_TELEMETRY=1 expo start --port 8081",
     "build": "expo export --platform web",
     "build:web": "expo export --platform web",
     "lint": "expo lint",
