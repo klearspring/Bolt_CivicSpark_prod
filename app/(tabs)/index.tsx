@@ -152,6 +152,22 @@ export default function ProfileTab() {
   const unlockedAchievements = achievements.filter(a => a.unlocked);
   const lockedAchievements = achievements.filter(a => !a.unlocked);
 
+  // Helper function to format user location
+  const formatUserLocation = () => {
+    const city = user?.location?.city;
+    const state = user?.location?.state;
+    
+    if (city && state) {
+      return `${city}, ${state}`;
+    } else if (city) {
+      return city;
+    } else if (state) {
+      return state;
+    }
+    
+    return 'Location not set';
+  };
+
   const renderTabContent = () => {
     switch (activeTab) {
       case 'overview':
@@ -372,7 +388,7 @@ export default function ProfileTab() {
             <View style={styles.locationContainer}>
               <MapPin size={14} color={Colors.textBody} />
               <Text style={styles.locationText}>
-                {user?.location?.city || 'Downtown'}, {user?.location?.state || 'CA'}
+                {formatUserLocation()}
               </Text>
             </View>
             <View style={styles.contactInfo}>
