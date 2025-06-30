@@ -140,10 +140,10 @@ export default function SettingsTab() {
         {
           id: 'profile',
           title: 'Edit Profile',
-          description: 'Update your personal information',
+          description: 'Update your personal information and photo',
           icon: User,
           type: 'navigation',
-          onPress: () => console.log('Navigate to profile edit')
+          onPress: () => router.push('/(tabs)/settings/edit-profile')
         },
         {
           id: 'location',
