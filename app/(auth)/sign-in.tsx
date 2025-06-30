@@ -31,6 +31,9 @@ export default function SignInScreen() {
   const [errors, setErrors] = useState<{[key: string]: string}>({});
   const [showDebug, setShowDebug] = useState(false);
 
+  // Check if debug panel should be available
+  const isDebugEnabled = process.env.EXPO_PUBLIC_SHOW_DEBUG_PANEL === 'true';
+
   const validateForm = (): boolean => {
     const newErrors: {[key: string]: string} = {};
 
@@ -159,18 +162,20 @@ export default function SignInScreen() {
             </View>
           )}
 
-          {/* Debug Panel Toggle */}
-          <TouchableOpacity 
-            style={styles.debugToggle}
-            onPress={() => setShowDebug(!showDebug)}
-          >
-            <Text style={styles.debugToggleText}>
-              {showDebug ? '🔧 Hide Debug' : '🔧 Show Debug Panel'}
-            </Text>
-          </TouchableOpacity>
+          {/* Debug Panel Toggle - Only show if enabled in environment */}
+          {isDebugEnabled && (
+            <TouchableOpacity 
+              style={styles.debugToggle}
+              onPress={() => setShowDebug(!showDebug)}
+            >
+              <Text style={styles.debugToggleText}>
+                {showDebug ? '🔧 Hide Debug' : '🔧 Show Debug Panel'}
+              </Text>
+            </TouchableOpacity>
+          )}
 
-          {/* Debug Panel */}
-          {showDebug && <DebugPanel />}
+          {/* Debug Panel - Only show if enabled and toggled on */}
+          {isDebugEnabled && showDebug && <DebugPanel />}
 
           {/* Featured Demo Section - Made more prominent */}
           {!isDemoMode && (

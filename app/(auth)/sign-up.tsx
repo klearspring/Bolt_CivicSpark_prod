@@ -12,7 +12,7 @@ import {
   KeyboardAvoidingView,
 } from 'react-native';
 import { Link, router } from 'expo-router';
-import { Eye, EyeOff, Mail, Lock, User, Phone, MapPin, ArrowLeft, Loader, Calendar } from 'lucide-react-native';
+import { Eye, EyeOff, Mail, Lock, User, Phone, MapPin, ArrowLeft, Loader } from 'lucide-react-native';
 import { Colors } from '@/constants/Colors';
 import { useAuth } from '@/contexts/AuthContext';
 import { RegisterData } from '@/types/auth';
@@ -446,7 +446,9 @@ export default function SignUpScreen() {
             {formData.agreeToTerms && <Text style={styles.checkmark}>✓</Text>}
           </View>
           <Text style={styles.checkboxText}>
-            I agree to the <Text style={styles.linkText}>Terms of Service</Text> *
+            I agree to the <Link href="/termsofservice" asChild>
+              <Text style={styles.linkText}>Terms of Service</Text>
+            </Link> *
           </Text>
         </TouchableOpacity>
         {errors.agreeToTerms && <Text style={styles.errorText}>{errors.agreeToTerms}</Text>}
@@ -459,7 +461,9 @@ export default function SignUpScreen() {
             {formData.agreeToPrivacy && <Text style={styles.checkmark}>✓</Text>}
           </View>
           <Text style={styles.checkboxText}>
-            I agree to the <Text style={styles.linkText}>Privacy Policy</Text> *
+            I agree to the <Link href="/privacypolicy" asChild>
+              <Text style={styles.linkText}>Privacy Policy</Text>
+            </Link> *
           </Text>
         </TouchableOpacity>
         {errors.agreeToPrivacy && <Text style={styles.errorText}>{errors.agreeToPrivacy}</Text>}
