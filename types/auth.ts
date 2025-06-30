@@ -16,6 +16,8 @@ export interface User {
     coordinates?: {
       latitude: number;
       longitude: number;
+      accuracy?: number;
+      timestamp?: number;
     };
   };
   preferences: {
@@ -99,4 +101,33 @@ export interface ChangePasswordData {
   currentPassword: string;
   newPassword: string;
   confirmNewPassword: string;
+}
+
+// New interfaces for geolocation functionality
+export interface LocationPermissionStatus {
+  granted: boolean;
+  canAskAgain: boolean;
+  status: 'granted' | 'denied' | 'undetermined';
+}
+
+export interface GeolocationOptions {
+  enableHighAccuracy?: boolean;
+  timeout?: number;
+  maximumAge?: number;
+}
+
+export interface LocationData {
+  latitude: number;
+  longitude: number;
+  accuracy?: number;
+  altitude?: number;
+  altitudeAccuracy?: number;
+  heading?: number;
+  speed?: number;
+  timestamp: number;
+}
+
+export interface LocationError {
+  code: number;
+  message: string;
 }
