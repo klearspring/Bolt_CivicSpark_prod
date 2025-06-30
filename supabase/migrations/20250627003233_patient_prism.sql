@@ -36,6 +36,7 @@ DECLARE
   user_dob date;
   user_location jsonb;
   user_preferences jsonb;
+  subscribe_to_newsletter_opted_in boolean;
 BEGIN
   -- Extract data with proper null handling
   user_first_name := COALESCE(NEW.raw_user_meta_data->>'first_name', 'User');
@@ -69,24 +70,23 @@ BEGIN
       "coordinates": null
     }'::jsonb
   END;
-  
-  -- Handle preferences JSON
-  user_preferences := CASE 
-    WHEN NEW.raw_user_meta_data->'preferences' IS NOT NULL 
-    THEN NEW.raw_user_meta_data->'preferences'
-    ELSE '{
-      "notifications": {
-        "email": true,
-        "push": true,
-        "sms": false
-      },
-      "privacy": {
-        "profileVisibility": "circles",
-        "locationSharing": true,
-        "activityVisibility": "circles"
-      }
-    }'::jsonb
-  END;
+
+-- Extract subscribe_to_newsletter and convert to boolean
+  subscribe_to_newsletter_opted_in := (NEW.raw_user_meta_data->>'subscribe_to_newsletter')::boolean;
+
+-- Construct preferences JSON, overriding email notification based on subscribe_to_newsletter
+  user_preferences := jsonb_build_object(
+    'notifications', jsonb_build_object(
+      'email', COALESCE(subscribe_to_newsletter_opted_in, true), -- Default to true if not specified
+      'push', true,
+      'sms', false
+    ),
+    'privacy', jsonb_build_object(
+      'profileVisibility', 'circles',
+      'locationSharing', true,
+      'activityVisibility', 'circles'
+    )
+  );
 
   -- Insert the user profile
   INSERT INTO public.user_profiles (
