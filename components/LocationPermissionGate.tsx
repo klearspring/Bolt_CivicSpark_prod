@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, ActivityIndicator } from 'react-native';
-import { MapPin, Settings, AlertCircle } from 'lucide-react-native';
+import { MapPin, Settings, CircleAlert as AlertCircle } from 'lucide-react-native';
 import { Colors } from '@/constants/Colors';
 import { locationService } from '@/services/locationService';
 import { LocationPermissionStatus } from '@/types/auth';
