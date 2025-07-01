@@ -4,6 +4,7 @@ import { Award, Target, Users, Calendar, MapPin, Mail, Phone, ChevronRight, Flam
 import { Colors } from '@/constants/Colors';
 import { useAuth } from '@/contexts/AuthContext';
 import { AchievementService } from '@/services/achievementService';
+import LocationPermissionGate from '@/components/LocationPermissionGate';
 
 export default function ProfileTab() {
   const { user, isDemoMode } = useAuth();
@@ -375,76 +376,78 @@ export default function ProfileTab() {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
-      {/* Header */}
-      <View style={styles.header}>
-        <View style={styles.profileSection}>
-          <Image 
-            source={{ uri: user?.avatar || 'https://images.pexels.com/photos/1222271/pexels-photo-1222271.jpeg?auto=compress&cs=tinysrgb&w=200&h=200&dpr=2' }} 
-            style={styles.profileImage} 
-          />
-          <View style={styles.profileInfo}>
-            <Text style={styles.profileName}>{user?.displayName || 'Alex Thompson'}</Text>
-            <View style={styles.locationContainer}>
-              <MapPin size={14} color={Colors.textBody} />
-              <Text style={styles.locationText}>
-                {formatUserLocation()}
-              </Text>
-            </View>
-            <View style={styles.contactInfo}>
-              <View style={styles.contactItem}>
-                <Mail size={12} color={Colors.textMuted} />
-                <Text style={styles.contactText}>{user?.email || 'demo@civicspark.com'}</Text>
+    <LocationPermissionGate>
+      <SafeAreaView style={styles.container}>
+        {/* Header */}
+        <View style={styles.header}>
+          <View style={styles.profileSection}>
+            <Image 
+              source={{ uri: user?.avatar || 'https://images.pexels.com/photos/1222271/pexels-photo-1222271.jpeg?auto=compress&cs=tinysrgb&w=200&h=200&dpr=2' }} 
+              style={styles.profileImage} 
+            />
+            <View style={styles.profileInfo}>
+              <Text style={styles.profileName}>{user?.displayName || 'Alex Thompson'}</Text>
+              <View style={styles.locationContainer}>
+                <MapPin size={14} color={Colors.textBody} />
+                <Text style={styles.locationText}>
+                  {formatUserLocation()}
+                </Text>
               </View>
-              {user?.phoneNumber && (
+              <View style={styles.contactInfo}>
                 <View style={styles.contactItem}>
-                  <Phone size={12} color={Colors.textMuted} />
-                  <Text style={styles.contactText}>{user.phoneNumber}</Text>
+                  <Mail size={12} color={Colors.textMuted} />
+                  <Text style={styles.contactText}>{user?.email || 'demo@civicspark.com'}</Text>
+                </View>
+                {user?.phoneNumber && (
+                  <View style={styles.contactItem}>
+                    <Phone size={12} color={Colors.textMuted} />
+                    <Text style={styles.contactText}>{user.phoneNumber}</Text>
+                  </View>
+                )}
+              </View>
+              {isDemoMode && (
+                <View style={styles.demoBadge}>
+                  <Text style={styles.demoText}>🎭 Demo Mode</Text>
                 </View>
               )}
             </View>
-            {isDemoMode && (
-              <View style={styles.demoBadge}>
-                <Text style={styles.demoText}>🎭 Demo Mode</Text>
-              </View>
-            )}
           </View>
         </View>
-      </View>
 
-      {/* Tab Navigation */}
-      <View style={styles.tabNavigation}>
-        <TouchableOpacity
-          style={[styles.tabButton, activeTab === 'overview' && styles.activeTabButton]}
-          onPress={() => setActiveTab('overview')}
-        >
-          <Text style={[styles.tabButtonText, activeTab === 'overview' && styles.activeTabButtonText]}>
-            Overview
-          </Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={[styles.tabButton, activeTab === 'actions' && styles.activeTabButton]}
-          onPress={() => setActiveTab('actions')}
-        >
-          <Text style={[styles.tabButtonText, activeTab === 'actions' && styles.activeTabButtonText]}>
-            Actions
-          </Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={[styles.tabButton, activeTab === 'achievements' && styles.activeTabButton]}
-          onPress={() => setActiveTab('achievements')}
-        >
-          <Text style={[styles.tabButtonText, activeTab === 'achievements' && styles.activeTabButtonText]}>
-            Achievements
-          </Text>
-        </TouchableOpacity>
-      </View>
+        {/* Tab Navigation */}
+        <View style={styles.tabNavigation}>
+          <TouchableOpacity
+            style={[styles.tabButton, activeTab === 'overview' && styles.activeTabButton]}
+            onPress={() => setActiveTab('overview')}
+          >
+            <Text style={[styles.tabButtonText, activeTab === 'overview' && styles.activeTabButtonText]}>
+              Overview
+            </Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={[styles.tabButton, activeTab === 'actions' && styles.activeTabButton]}
+            onPress={() => setActiveTab('actions')}
+          >
+            <Text style={[styles.tabButtonText, activeTab === 'actions' && styles.activeTabButtonText]}>
+              Actions
+            </Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={[styles.tabButton, activeTab === 'achievements' && styles.activeTabButton]}
+            onPress={() => setActiveTab('achievements')}
+          >
+            <Text style={[styles.tabButtonText, activeTab === 'achievements' && styles.activeTabButtonText]}>
+              Achievements
+            </Text>
+          </TouchableOpacity>
+        </View>
 
-      {/* Tab Content */}
-      <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
-        {renderTabContent()}
-      </ScrollView>
-    </SafeAreaView>
+        {/* Tab Content */}
+        <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
+          {renderTabContent()}
+        </ScrollView>
+      </SafeAreaView>
+    </LocationPermissionGate>
   );
 }
 
